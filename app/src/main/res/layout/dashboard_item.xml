@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_view"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="2dp"
+    card_view:cardCornerRadius="3dp" >
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:card_view="http://schemas.android.com/apk/res-auto"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:orientation="vertical"
+android:weightSum="1">
+
+<TextView
+    android:id="@+id/dashboard_name"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:fontFamily="sans-serif"
+    android:text="Name"
+    android:textAppearance="?android:attr/textAppearanceLarge"
+    android:textStyle="bold"
+    android:typeface="sans"
+    android:layout_alignParentTop="true"
+    android:layout_alignParentStart="true"
+    android:layout_marginStart="10dp" />
+
+<TextView
+    android:id="@+id/dashboard_appointment"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="appointment"
+    android:textAppearance="?android:attr/textAppearanceMedium"
+    android:layout_below="@+id/dashboard_dosage"
+    android:layout_alignStart="@+id/dashboard_dosage" />
+
+<TextView
+    android:id="@+id/dashboard_dosage"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="doses"
+    android:textAppearance="?android:attr/textAppearanceMedium"
+    android:layout_below="@+id/dashboard_name"
+    android:layout_alignStart="@+id/dashboard_name" />
+
+<TextView
+    android:id="@+id/title_dose"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="right"
+    android:text="Time till next Dosage"
+    android:textAppearance="?android:attr/textAppearanceSmall"
+    android:layout_below="@+id/dashboard_appointment"
+    android:layout_alignParentEnd="true"
+    android:layout_marginEnd="16dp" />
+
+<ProgressBar
+    android:id="@+id/dashboard_dosage_progress"
+    style="?android:attr/progressBarStyleHorizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@+id/title_dose"
+    android:indeterminate="false"
+    android:layout_alignStart="@+id/dashboard_appointment"
+    android:layout_alignEnd="@+id/title_dose" />
+
+<TextView
+    android:id="@+id/dashboard_dose_tv"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="right"
+    android:text="6 hours"
+    android:textAppearance="?android:attr/textAppearanceSmall"
+    android:layout_below="@+id/dashboard_dosage_progress"
+    android:layout_alignEnd="@+id/dashboard_dosage_progress" />
+
+<ProgressBar
+    android:id="@+id/dashboard_refill_progress"
+    style="?android:attr/progressBarStyleHorizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@+id/dashboard_dose_tv"
+    android:layout_gravity="center_horizontal"
+    android:indeterminate="false"
+    android:layout_alignEnd="@+id/dashboard_dose_tv"
+    android:layout_alignStart="@+id/dashboard_dosage_progress" />
+
+<TextView
+    android:id="@+id/dashboard_refills_tv"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="right"
+    android:text="19/30"
+    android:textAppearance="?android:attr/textAppearanceSmall"
+    android:layout_below="@+id/dashboard_refill_progress"
+    android:layout_alignEnd="@+id/dashboard_dose_tv" />
+</RelativeLayout>
+</android.support.v7.widget.CardView>
