@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_manage"
+        android:icon="@drawable/ic_menu_manage"
+        android:title="@string/menu_item_call" />
+    <item
+        android:id="@+id/intent_dashboard"
+        android:icon="@drawable/ic_dashboard"
+        android:title="@string/menu_item_text"/>
+    <item
+        android:id="@+id/action_pill"
+        android:icon="@drawable/ic_person"
+        android:title="@string/menu_item_pill" />
+</menu>

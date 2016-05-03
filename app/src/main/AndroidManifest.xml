@@ -29,6 +29,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.emyyn.riley.ember.MainActivity" />
         </activity>
+        <provider
+            android:authorities="@strings/contract"
+            android:name=".data.EmberProvider"
+            />
     </application>
 
 </manifest>

@@ -28,16 +28,16 @@ android:weightSum="1">
     android:layout_marginStart="10dp" />
 
 <TextView
-    android:id="@+id/dashboard_appointment"
+    android:id="@+id/details_extra"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:text="appointment"
     android:textAppearance="?android:attr/textAppearanceMedium"
-    android:layout_below="@+id/dashboard_dosage"
-    android:layout_alignStart="@+id/dashboard_dosage" />
+    android:layout_below="@+id/details_dosage"
+    android:layout_alignStart="@+id/details_dosage" />
 
 <TextView
-    android:id="@+id/dashboard_dosage"
+    android:id="@+id/details_dosage"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:text="doses"
@@ -46,55 +46,55 @@ android:weightSum="1">
     android:layout_alignStart="@+id/dashboard_name" />
 
 <TextView
-    android:id="@+id/title_dose"
+    android:id="@+id/details_title_dose"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="right"
     android:text="Time till next Dosage"
     android:textAppearance="?android:attr/textAppearanceSmall"
-    android:layout_below="@+id/dashboard_appointment"
+    android:layout_below="@+id/details_extra"
     android:layout_alignParentEnd="true"
     android:layout_marginEnd="16dp" />
 
 <ProgressBar
-    android:id="@+id/dashboard_dosage_progress"
+    android:id="@+id/details_dosage_progress"
     style="?android:attr/progressBarStyleHorizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_below="@+id/title_dose"
+    android:layout_below="@+id/details_title_dose"
     android:indeterminate="false"
-    android:layout_alignStart="@+id/dashboard_appointment"
-    android:layout_alignEnd="@+id/title_dose" />
+    android:layout_alignStart="@+id/details_extra"
+    android:layout_alignEnd="@+id/details_title_dose" />
 
 <TextView
-    android:id="@+id/dashboard_dose_tv"
+    android:id="@+id/details_dose_tv"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="right"
     android:text="6 hours"
     android:textAppearance="?android:attr/textAppearanceSmall"
-    android:layout_below="@+id/dashboard_dosage_progress"
-    android:layout_alignEnd="@+id/dashboard_dosage_progress" />
+    android:layout_below="@+id/details_dosage_progress"
+    android:layout_alignEnd="@+id/details_dosage_progress" />
 
 <ProgressBar
-    android:id="@+id/dashboard_refill_progress"
+    android:id="@+id/details_refill_progress"
     style="?android:attr/progressBarStyleHorizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_below="@+id/dashboard_dose_tv"
+    android:layout_below="@+id/details_dose_tv"
     android:layout_gravity="center_horizontal"
     android:indeterminate="false"
-    android:layout_alignEnd="@+id/dashboard_dose_tv"
-    android:layout_alignStart="@+id/dashboard_dosage_progress" />
+    android:layout_alignEnd="@+id/details_dose_tv"
+    android:layout_alignStart="@+id/details_dosage_progress" />
 
 <TextView
-    android:id="@+id/dashboard_refills_tv"
+    android:id="@+id/details_refills_tv"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="right"
     android:text="19/30"
     android:textAppearance="?android:attr/textAppearanceSmall"
-    android:layout_below="@+id/dashboard_refill_progress"
-    android:layout_alignEnd="@+id/dashboard_dose_tv" />
+    android:layout_below="@+id/details_refill_progress"
+    android:layout_alignEnd="@+id/details_dose_tv" />
 </RelativeLayout>
 </android.support.v7.widget.CardView>

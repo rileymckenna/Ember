@@ -1,5 +1,8 @@
 package com.emyyn.riley.ember;
 
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -13,6 +16,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.emyyn.riley.ember.data.EmberContract;
 
 import java.util.ArrayList;
 
@@ -31,6 +36,7 @@ public class MainActivity extends AppCompatActivity
     FhirContext otx = new FhirContext().forDstu2();
     IGenericClient client = otx.newRestfulGenericClient("https://open-ic.epic.com/FHIR/api/FHIR/DSTU2");//"http://fhirtest.uhn.ca/baseDstu2");//"http://spark-dstu2.furore.com/fhir");
     private ArrayList<String> patientIds = null;
+    private final Context mContext = this;
     private Patient patient;
     private MyArrayAdapter mAdapter;
     private ArrayList<MedicationOrder> medicationOrderArrayList;
@@ -43,17 +49,12 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //parent.addIdentifier().getValue();
-        //client = otx.newRestfulGenericClient("https://http://fhirtest.uhn.ca/baseDstu2/");
-//        ca.uhn.fhir.model.api.Bundle bundle = client.search().forResource(Patient.class).include(new Include("Patient:id")).execute();
         initPatientList();
         load();
-        //List<String> arrayList = new ArrayList<String>(Arrays.asList(child));
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         RecyclerView lv = (RecyclerView) findViewById(R.id.listView);
-        //ArrayAdapter arrayAdapter = new MyArrayAdapter(this, R.layout.content_main, get(child));
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
         mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         lv.setLayoutManager(mLayoutManager);
@@ -132,6 +133,50 @@ public class MainActivity extends AppCompatActivity
     private void load() {
         new AsyncTask<Void, Void, ca.uhn.fhir.model.dstu2.resource.Bundle>(
         ) {
+            String[] columns = EmberContract.MedicationOrderEntry.getColumns();
+            long addMedicationOrder(String medicationId) {
+                long medicationOrderId = 0;
+
+                Cursor medicationOrderCursor = mContext.getContentResolver().query(
+                        EmberContract.MedicationOrderEntry.CONTENT_URI,
+                        new String[]{EmberContract.MedicationOrderEntry._ID}, EmberContract.MedicationOrderEntry._ID +
+                                " = ?", new String[]{medicationId}, null
+                );
+
+                if (medicationOrderCursor.moveToFirst()) {
+                    int medicationOrderIdIndex = medicationOrderCursor.getColumnIndex(EmberContract.MedicationOrderEntry._ID);
+                    medicationOrderId = medicationOrderCursor.getLong(medicationOrderIdIndex);
+                }else {
+                    ContentValues medicationOrderValues = new ContentValues();
+                    medicationOrderValues.put(EmberContract.MedicationOrderEntry.COLUMN_MED_KEY, columns[1]);
+                    medicationOrderValues.put(EmberContract.MedicationOrderEntry.COLUMN_PATIENT_KEY, columns[2]);
+                    medicationOrderValues.put(EmberContract.MedicationOrderEntry.COLUMN_PRESCRIBER_KEY, columns[3]);
+                    medicationOrderValues.put(EmberContract.MedicationOrderEntry.COLUMN_DISPENSE_SUPPLY_VALUE, columns[4]);
+                    medicationOrderValues.put(EmberContract.MedicationOrderEntry.COLUMN_DATE_WRITTEN, columns[5]);
+                    medicationOrderValues.put(EmberContract.MedicationOrderEntry.COLUMN_DISPENSE_SUPPLY_UNIT, columns[6]);
+                    medicationOrderValues.put(EmberContract.MedicationOrderEntry.COLUMN_DISPENSE_SUPPLY_CODE, columns[7]);
+                    medicationOrderValues.put(EmberContract.MedicationOrderEntry.COLUMN_DISPENSE_QUANTITY, columns[8]);
+                    medicationOrderValues.put(EmberContract.MedicationOrderEntry.COLUMN_VALID_START, columns[9]);
+                    medicationOrderValues.put(EmberContract.MedicationOrderEntry.COLUMN_VALID_END, columns[10]);
+                    medicationOrderValues.put(EmberContract.MedicationOrderEntry.COLUMN_DOSAGE_INSTRUCTIONS_TEXT, columns[11]);
+                    medicationOrderValues.put(EmberContract.MedicationOrderEntry.COLUMN_DOSAGE_INSTRUCTIONS_ASNEEDED, columns[12]);
+                    medicationOrderValues.put(EmberContract.MedicationOrderEntry.COLUMN_DOSAGE_INSTRUCTIONS_ROUTE, columns[13]);
+                    medicationOrderValues.put(EmberContract.MedicationOrderEntry.COLUMN_DOSAGE_INSTRUCTIONS_METHOD, columns[14]);
+                    medicationOrderValues.put(EmberContract.MedicationOrderEntry.COLUMN_DOSAGE_INSTRUCTIONS_TIMING_FREQUENCY, columns[15]);
+                    medicationOrderValues.put(EmberContract.MedicationOrderEntry.COLUMN_DOSAGE_INSTRUCTIONS_TIMING_PERIOD, columns[16]);
+                    medicationOrderValues.put(EmberContract.MedicationOrderEntry.COLUMN_DOSAGE_INSTRUCTIONS_TIMING_PERIOD_UNITS, columns[17]);
+                    medicationOrderValues.put(EmberContract.MedicationOrderEntry.COLUMN_DOSAGE_INSTRUCTIONS_TIMING_START, columns[18]);
+                    medicationOrderValues.put(EmberContract.MedicationOrderEntry.COLUMN_DOSAGE_INSTRUCTIONS_TIMING_END, columns[19]);
+                    medicationOrderValues.put(EmberContract.MedicationOrderEntry.COLUMN_DOSAGE_INSTRUCTIONS_DOSE_VALUE, columns[20]);
+                    medicationOrderValues.put(EmberContract.MedicationOrderEntry.COLUMN_DOSAGE_INSTRUCTIONS_DOSE_CODE, columns[21]);
+
+                }
+                return  medicationOrderId;
+            };
+
+
+
+
             @Override
             protected ca.uhn.fhir.model.dstu2.resource.Bundle doInBackground(Void... params) {
                 ca.uhn.fhir.model.dstu2.resource.Bundle dstu2Bundle = client.search().forResource(MedicationOrder.class)
