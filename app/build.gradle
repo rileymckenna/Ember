@@ -22,17 +22,17 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.2.1'
-    compile 'com.android.support:design:23.2.1'
+    compile(group: 'ca.uhn.hapi.fhir', name: 'hapi-fhir-android', version: '1.5', classifier: 'dstu2') {
+        exclude module: 'javax.servlet-api'
+        exclude module: 'hapi-fhir-base'
+    }
+    compile 'com.android.support:appcompat-v7:23.3.0'
+    compile 'com.android.support:design:23.3.0'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'de.hdodenhof:circleimageview:1.+'
-    compile 'com.android.support:support-v4:23.2.1'
-    compile 'com.android.support:recyclerview-v7:23.2.1'
-    compile (group: 'ca.uhn.hapi.fhir', name: 'hapi-fhir-android', version: '1.5', classifier: 'dstu2') {
-        exclude module: 'javax.servlet-api'
-        exclude module: 'hapi-fhir-base'}
-    compile 'com.android.support:cardview-v7:23.0.+'
-    compile 'com.android.support:recyclerview-v7:23.0.+'
+    compile 'com.android.support:support-v4:23.3.0'
+    compile 'com.android.support:recyclerview-v7:23.3.0'
+    compile 'com.android.support:cardview-v7:23.3.0'
     compile 'joda-time:joda-time:2.9.3'
     compile 'io.github.yavski:fab-speed-dial:1.0.4'
 }

@@ -30,7 +30,7 @@
                 android:value="com.emyyn.riley.ember.MainActivity" />
         </activity>
         <provider
-            android:authorities="@strings/contract"
+            android:authorities="com.emyyn.riley.ember.app"
             android:name=".data.EmberProvider"
             />
     </application>

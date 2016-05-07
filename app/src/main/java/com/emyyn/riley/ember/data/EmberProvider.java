@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import static com.emyyn.riley.ember.data.EmberContract.CONTENT_AUTHORITY;
 import static com.emyyn.riley.ember.data.EmberContract.MedicationAdministrationEntry;
@@ -26,6 +27,8 @@ public class EmberProvider extends ContentProvider {
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private EmberDbHelper mOpenHelper;
+    private final String TAG = this.getClass().getSimpleName();
+
 
     static final int PATIENT = 100;
     static final int PATIENT_PROVIDER = 101;
@@ -35,7 +38,8 @@ public class EmberProvider extends ContentProvider {
     static final int MEDICATION = 300;
     static final int MEDICATION_ADMINISTRATION = 400;
     static final int MEDICATION_ORDER = 500;
-    static final int MEDICATION_ORDER_MEDICATION = 501;
+    static final int MEDICATION_ORDER_PATIENT = 501;
+    static final int MEDICATION_ORDER_MEDICATION = 502;
 
     private static UriMatcher buildUriMatcher() {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -44,7 +48,8 @@ public class EmberProvider extends ContentProvider {
         // For each type of URI you want to add, create a corresponding code.
         matcher.addURI(authority, PATH_PATIENT, PATIENT);
         matcher.addURI(authority, PATH_MEDICATION + "/*", MEDICATION);
-        matcher.addURI(authority, PATH_MEDICATIONORDER + "/*", MEDICATION_ORDER_MEDICATION);
+        matcher.addURI(authority, PATH_MEDICATIONORDER, MEDICATION_ORDER);
+        matcher.addURI(authority, PATH_MEDICATIONORDER + "/*", MEDICATION_ORDER);
         return matcher;
     }
 
@@ -81,7 +86,9 @@ public class EmberProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        return false;
+        mOpenHelper = new EmberDbHelper(getContext());
+        Log.w("Create Helper", "Created");
+        return true;
     }
 
     @Nullable
@@ -99,8 +106,27 @@ public class EmberProvider extends ContentProvider {
                         sortOrder);
                 break;
             }
+            case MEDICATION_ORDER: {
+                c = mOpenHelper.getReadableDatabase().query(MedicationOrderEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder);
+                break;
+            }
             case MEDICATION: {
                 c = mOpenHelper.getReadableDatabase().query(MedicationEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder);
+                break;
+            }case MEDICATION_ORDER_PATIENT: {
+                c = sMedicationOrdersbyPatientSettingBuilder.query(mOpenHelper.getReadableDatabase(),
                         projection,
                         selection,
                         selectionArgs,
@@ -113,7 +139,7 @@ public class EmberProvider extends ContentProvider {
                 throw new UnsupportedOperationException("Not able to query: " + uri);
         }
 
-        return null;
+        return c;
     }
 
     @Nullable
@@ -145,7 +171,7 @@ public class EmberProvider extends ContentProvider {
             case PATIENT: {
                 long _id = db.insert(PatientEntry.TABLE_NAME, null, values);
                 if (_id > 0) {
-                    returnUri = PatientEntry.buildPatientUri(_id);
+                    returnUri = PatientEntry.buildPatientUri(values.get("patient_id").toString());
                 } else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
@@ -153,10 +179,17 @@ public class EmberProvider extends ContentProvider {
             case MEDICATION_ORDER: {
                 long _id = db.insert(MedicationOrderEntry.TABLE_NAME, null, values);
                 if (_id > 0) {
-                    returnUri = MedicationOrderEntry.buildMedicationOrderUri(_id);
+                    Log.i("EmberProvider", values.get("medication_id").toString());
+                    returnUri = MedicationOrderEntry.buildMedicationOrderUri(values.get("medication_id").toString());
                 } else
                     throw new SQLException("Failed to insert row into" + uri);
                 break;
+            }
+            case MEDICATION: {
+                long _id = db.insert(MedicationEntry.TABLE_NAME, null, values);
+                if (_id > 0) {
+                    returnUri = MedicationEntry.buildMedicationUri(values.get("medication_id").toString());
+                }
             }
             default:
                 throw new SQLException("Unknown Uri" + uri);
@@ -251,9 +284,26 @@ public class EmberProvider extends ContentProvider {
                 getContext().getContentResolver().notifyChange(uri, null);
                 return returnCount;
             }
-            default:
+            case MEDICATION: {
+                db.beginTransaction();
+                returnCount = 0;
+                try {
+                    for (ContentValues value : values) {
+                        long _id = db.insert(MedicationEntry.TABLE_NAME, null, value);
+                        if (_id != 1) {
+                            returnCount++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                return returnCount;
+            }default:
                 return super.bulkInsert(uri, values);
         }
+
     }
 }
 

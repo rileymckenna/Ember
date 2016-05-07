@@ -10,5 +10,8 @@
     <string name="menu_item_text">Dashboard</string>
     <string name="menu_item_pill">Take Medication</string>
     <string name="contract">com.emyyn.riley.ember.app</string>
+    <string name="pref_patient_default">Tbt3KuCY0B5PSrJvCu2j-PlK.aiHsu2xUjUM8bWpetXoB</string>
+    <string name="pref_patient_key">Tbt3KuCY0B5PSrJvCu2j-PlK.aiHsu2xUjUM8bWpetXoB</string>
+    <string name="patientId">Tbt3KuCY0B5PSrJvCu2j-PlK.aiHsu2xUjUM8bWpetXoB</string>
 
 </resources>
