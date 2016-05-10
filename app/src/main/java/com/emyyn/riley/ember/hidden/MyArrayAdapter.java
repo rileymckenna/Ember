@@ -1,4 +1,4 @@
-package com.emyyn.riley.ember;
+package com.emyyn.riley.ember.hidden;
 
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.emyyn.riley.ember.MedicationDetails;
+import com.emyyn.riley.ember.R;
 
 import java.util.ArrayList;
 import java.util.List;

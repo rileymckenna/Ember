@@ -7,4 +7,5 @@
     <color name="colorTextLarge">#323232</color>
     <color name="icon_light">#ffffff</color>
     <color name="icon_light_inactive">#242424</color>
+    <color name="transparent">#00ffffff</color>
 </resources>

@@ -13,14 +13,14 @@ import static com.emyyn.riley.ember.data.EmberContract.PatientEntry;
  * Created by Riley on 4/30/2016.
  */
 public class EmberDbHelper extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 17;
     static final String DATABASE_NAME = "ember.db";
 
     private static final String TEXT = " TEXT, ";
-    private static final String REAL = " REAL NOT NULL, ";
+    private static final String REAL = " REAL, ";
     private static final String PRIMARY_KEY = " INTEGER PRIMARY KEY AUTOINCREMENT, ";
-    private static final String DOUBLE = " DOUBLE NOT NULL, ";
-    private static final String INTEGER = " INTEGER NOT NULL, ";
+    private static final String DOUBLE = " DOUBLE, ";
+    private static final String INTEGER = " INTEGER, ";
     private static final String OPEN = " (";
     private static final String CLOSE = " );";
 
@@ -51,14 +51,11 @@ public class EmberDbHelper extends SQLiteOpenHelper {
                 PatientEntry.COLUMN_MARRIED_STATUS + TEXT +
                 PatientEntry.COLUMN_RACE + TEXT +
                 //Foreign Keys
-                PatientEntry.COLUMN_MED_KEY + INTEGER +
                 PatientEntry.COLUMN_PROVIDER_KEY + TEXT +
 
-                " FOREIGN KEY (" + PatientEntry.COLUMN_MED_KEY + ") REFERENCES " +
-                MedicationEntry.TABLE_NAME + " (" + MedicationEntry._ID + "), " +
                 " FOREIGN KEY (" + PatientEntry.COLUMN_PROVIDER_KEY + ") REFERENCES " +
                 ProviderEntry.TABLE_NAME + " (" + ProviderEntry._ID + "), " +
-                " UNIQUE (" + PatientEntry._ID +","+PatientEntry.COLUMN_PATIENT_ID + ") ON CONFLICT REPLACE" + CLOSE;
+                " UNIQUE (" + PatientEntry.COLUMN_PATIENT_ID + ") ON CONFLICT REPLACE" + CLOSE;
         Log.i("CREATE_Patient", SQL_CREATE_PATIENT_TABLE);
 
 
@@ -67,13 +64,25 @@ public class EmberDbHelper extends SQLiteOpenHelper {
                 MedicationEntry.COLUMN_DISPLAY + TEXT +
                 MedicationEntry.COLUMN_PRODUCT + TEXT +
                 MedicationEntry.COLUMN_CODE_TEXT + TEXT +
+
                 " UNIQUE (" + MedicationEntry._ID + ") ON CONFLICT REPLACE" +
                 CLOSE;
         Log.i("CREATE_MEDICATION", SQL_CREATE_MEDICATION_TABLE);
 
+        final String SQL_CREATE_RELATION_TABLE = "CREATE TABLE " + RelationEntry.TABLE_NAME + OPEN +
+                EmberContract.RelationEntry._ID + PRIMARY_KEY +
+                EmberContract.RelationEntry.COLUMN_PATIENT_ID + TEXT +
+                EmberContract.RelationEntry.COLUMN_CHILD_ID + TEXT +
+                " FOREIGN KEY (" + EmberContract.RelationEntry.COLUMN_PATIENT_ID + ") REFERENCES " +
+                PatientEntry.TABLE_NAME + " (" + PatientEntry.COLUMN_PATIENT_ID + "), " +
+                " UNIQUE (" + RelationEntry._ID + ") ON CONFLICT REPLACE" +
+                CLOSE;
+        Log.i("CREATE_RELATIONS", SQL_CREATE_MEDICATION_TABLE);
+
         final String SQL_CREATE_MEDICATION_ORDER_TABLE = "CREATE TABLE " + MedicationOrderEntry.TABLE_NAME + OPEN +
                 MedicationOrderEntry._ID + PRIMARY_KEY +
                 MedicationOrderEntry.COLUMN_MED_KEY + INTEGER +
+                MedicationOrderEntry.COLUMN_MEDICATION_ORDER_ID + INTEGER +
                 MedicationOrderEntry.COLUMN_PATIENT_KEY + INTEGER +
                 MedicationOrderEntry.COLUMN_PRESCRIBER_KEY + INTEGER +
                 MedicationOrderEntry.COLUMN_DISPENSE_SUPPLY_VALUE + INTEGER +
@@ -94,6 +103,11 @@ public class EmberDbHelper extends SQLiteOpenHelper {
                 MedicationOrderEntry.COLUMN_DOSAGE_INSTRUCTIONS_TIMING_END + TEXT +
                 MedicationOrderEntry.COLUMN_DOSAGE_INSTRUCTIONS_DOSE_VALUE + INTEGER +
                 MedicationOrderEntry.COLUMN_DOSAGE_INSTRUCTIONS_DOSE_CODE + TEXT +
+                MedicationOrderEntry.COLUMN_LAST_UPDATED_AT + INTEGER +
+                MedicationOrderEntry.COLUMN_REASON_GIVEN + TEXT +
+                MedicationOrderEntry.COLUMN_STATUS + TEXT +
+                MedicationOrderEntry.COLUMN_LAST_TAKEN + TEXT +
+                MedicationOrderEntry.COLUMN_RUNNING_TOTAL + TEXT +
 
                 " FOREIGN KEY (" + MedicationOrderEntry.COLUMN_MED_KEY + ") REFERENCES " +
                 MedicationEntry.TABLE_NAME + " (" + MedicationEntry._ID + "), " +
@@ -101,7 +115,7 @@ public class EmberDbHelper extends SQLiteOpenHelper {
                 PatientEntry.TABLE_NAME + " (" + PatientEntry._ID + "), " +
                 " FOREIGN KEY (" + MedicationOrderEntry.COLUMN_PRESCRIBER_KEY + ") REFERENCES " +
                 ProviderEntry.TABLE_NAME + " (" + ProviderEntry._ID + "), " +
-                " UNIQUE (" + MedicationOrderEntry._ID + ") ON CONFLICT REPLACE" +
+                " UNIQUE (" + MedicationOrderEntry.COLUMN_MEDICATION_ORDER_ID+ ") ON CONFLICT REPLACE" +
                 CLOSE;
         Log.i("CREATE_MEDICATION_ORDER", SQL_CREATE_MEDICATION_ORDER_TABLE);
 
@@ -135,7 +149,6 @@ public class EmberDbHelper extends SQLiteOpenHelper {
 
         final String SQL_CREATE_PROVIDER_TABLE = "CREATE TABLE " + ProviderEntry.TABLE_NAME + OPEN +
                 ProviderEntry._ID + PRIMARY_KEY +
-                ProviderEntry.COLUMN_PATIENT_ID + TEXT +
                 //Name
                 ProviderEntry.COLUMN_NAME_FAMILY + TEXT +
                 ProviderEntry.COLUMN_NAME_GIVEN + TEXT +
@@ -157,8 +170,6 @@ public class EmberDbHelper extends SQLiteOpenHelper {
                 ProviderEntry.COLUMN_ROLE + TEXT +
                 ProviderEntry.COLUMN_SPECIALTY + TEXT +
 
-                " FOREIGN KEY (" + ProviderEntry.COLUMN_PATIENT_ID + ") REFERENCES " +
-                PatientEntry.TABLE_NAME + " (" + PatientEntry._ID + "), " +
                 " UNIQUE (" + ProviderEntry._ID + ") ON CONFLICT REPLACE" + CLOSE;
         Log.i("CREATE_PROVIDER", SQL_CREATE_PROVIDER_TABLE);
 
@@ -167,6 +178,7 @@ public class EmberDbHelper extends SQLiteOpenHelper {
         db.execSQL(SQL_CREATE_MEDICATION_TABLE);
         db.execSQL(SQL_CREATE_PATIENT_TABLE);
         db.execSQL(SQL_CREATE_PROVIDER_TABLE);
+        db.execSQL(SQL_CREATE_RELATION_TABLE);
     }
 
     @Override
@@ -176,6 +188,7 @@ public class EmberDbHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + MedicationEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + MedicationOrderEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + MedicationAdministrationEntry.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + RelationEntry.TABLE_NAME);
         onCreate(db);
     }
 }

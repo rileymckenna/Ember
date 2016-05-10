@@ -21,6 +21,7 @@ public class EmberContract {
     public static final String PATH_MEDICATIONORDER = "medicationorder";
     public static final String PATH_REMINDERS = "reminders";
     public static final String PATH_PROVIDER = "provider";
+    public static final String PATH_RELATIONS = "relations";
 
     // To make it easy to query for the exact date, we normalize all dates that go into
     // the database to the start of the the Julian day at UTC.
@@ -52,6 +53,7 @@ public class EmberContract {
 
 
     }
+
     public static final class MedicationOrderEntry implements BaseColumns {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_MEDICATIONORDER).build();
 
@@ -60,7 +62,7 @@ public class EmberContract {
 
         //Table Name
         public static final String TABLE_NAME = "medication_order";
-
+        public static final String COLUMN_MEDICATION_ORDER_ID = "medication_order_id";
         public static final String COLUMN_MED_KEY = "medication_id";
         public static final String COLUMN_PATIENT_KEY = "patient_id";
         public static final String COLUMN_PRESCRIBER_KEY = "prescriber_id";
@@ -82,48 +84,33 @@ public class EmberContract {
         public static final String COLUMN_DOSAGE_INSTRUCTIONS_TIMING_END = "di_end";
         public static final String COLUMN_DOSAGE_INSTRUCTIONS_DOSE_VALUE = "di_dose_value";
         public static final String COLUMN_DOSAGE_INSTRUCTIONS_DOSE_CODE = "di_dose_code";
+        public static final String COLUMN_LAST_UPDATED_AT = "last_updated";
+        public static final String COLUMN_REASON_GIVEN = "reason_given";
+        public static final String COLUMN_STATUS = "status" ;
+        public static final String COLUMN_LAST_TAKEN = "last_taken" ;
+        public static final String COLUMN_RUNNING_TOTAL = "running_total";
 
-        public static String[] getColumns(){
-            String[] columns = new String[]{
-                    TABLE_NAME + "." + _ID,
-                    COLUMN_MED_KEY,
-                    COLUMN_PATIENT_KEY,
-                    COLUMN_PRESCRIBER_KEY,
-                    COLUMN_DISPENSE_SUPPLY_VALUE,
-                    COLUMN_DATE_WRITTEN,
-                    COLUMN_DISPENSE_SUPPLY_UNIT,
-                    COLUMN_DISPENSE_SUPPLY_CODE,
-                    COLUMN_DISPENSE_QUANTITY,
-                    COLUMN_VALID_START,
-                    COLUMN_VALID_END,
-                    COLUMN_DOSAGE_INSTRUCTIONS_TEXT,
-                    COLUMN_DOSAGE_INSTRUCTIONS_ASNEEDED,
-                    COLUMN_DOSAGE_INSTRUCTIONS_ROUTE,
-                    COLUMN_DOSAGE_INSTRUCTIONS_METHOD,
-                    COLUMN_DOSAGE_INSTRUCTIONS_TIMING_FREQUENCY,
-                    COLUMN_DOSAGE_INSTRUCTIONS_TIMING_PERIOD,
-                    COLUMN_DOSAGE_INSTRUCTIONS_TIMING_PERIOD_UNITS,
-                    COLUMN_DOSAGE_INSTRUCTIONS_TIMING_START,
-                    COLUMN_DOSAGE_INSTRUCTIONS_TIMING_END,
-                    COLUMN_DOSAGE_INSTRUCTIONS_DOSE_VALUE,
-                    COLUMN_DOSAGE_INSTRUCTIONS_DOSE_CODE
-            };
-            return columns;
-        }
-
-
-        public static Uri buildMedicationOrderUri(String id ) {
+        public static Uri buildMedicationOrderUri(String id) {
             return CONTENT_URI.buildUpon().appendPath(id).build();
         }
 
+        //content://com.emyyn.riley.ember.app/medicationorder/patient/48
         public static Uri buildMedicationOrderWithPatientId(String patient) {
-            return CONTENT_URI.buildUpon().appendPath(patient).build();
+            return CONTENT_URI.buildUpon().appendPath("patient").appendPath(patient).build();
         }
 
 
         public static Uri buildMedicationOrderUri(Long medicationOrderId) {
             return ContentUris.withAppendedId(CONTENT_URI, medicationOrderId);
         }
+
+        public static String getPatientId(Uri uri) {
+            return uri.getPathSegments().get(2);
+        }
+        public static String getMedicationOrderId(Uri uri) {
+            return uri.getPathSegments().get(1);
+        }
+
     }
 
     //Patient
@@ -135,16 +122,14 @@ public class EmberContract {
 
         //Table Name
         public static final String TABLE_NAME = "patient";
-
-        public static final String COLUMN_MED_KEY = "medication_id";
         public static final String COLUMN_PROVIDER_KEY = "provider_id";
         public static final String COLUMN_DOB = "dob";
         public static final String COLUMN_GENDER = "gender";
         public static final String COLUMN_ACTIVE = "active";
-        public static final String COLUMN_PATIENT_ID = "patient_index";
+        public static final String COLUMN_PATIENT_ID = "patient_id";
         public static final String COLUMN_NAME_FAMILY = "last_name";
         public static final String COLUMN_NAME_GIVEN = "first_name";
-        public static final String COLUMN_ADDRESS= " street";
+        public static final String COLUMN_ADDRESS = " street";
         public static final String COLUMN_CITY = "city";
         public static final String COLUMN_STATE = "state";
         public static final String COLUMN_ZIP = "zip_code";
@@ -153,10 +138,9 @@ public class EmberContract {
         public static final String COLUMN_LANGUAGE = "language";
         public static final String COLUMN_MARRIED_STATUS = "marital_status";
 
-        public String[] getColumns(){
+        public String[] getColumns() {
             String[] str = {
                     TABLE_NAME + "." + _ID,
-                    COLUMN_MED_KEY,
                     COLUMN_PROVIDER_KEY,
                     COLUMN_DOB,
                     COLUMN_GENDER,
@@ -187,7 +171,7 @@ public class EmberContract {
     public static final class MedicationAdministrationEntry implements BaseColumns {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_MEDICATIONADMINISTRATION).build();
 
-        public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_MEDICATIONADMINISTRATION ;
+        public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_MEDICATIONADMINISTRATION;
         public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_MEDICATIONADMINISTRATION;
 
         //Table Name
@@ -230,7 +214,7 @@ public class EmberContract {
 
         public static final String COLUMN_NAME_FAMILY = "last_name";
         public static final String COLUMN_NAME_GIVEN = "first_name";
-        public static final String COLUMN_ADDRESS= " street";
+        public static final String COLUMN_ADDRESS = " street";
         public static final String COLUMN_CITY = "city";
         public static final String COLUMN_STATE = "state";
         public static final String COLUMN_ZIP = "zip_code";
@@ -251,4 +235,20 @@ public class EmberContract {
 
     }
 
+    public static class RelationEntry implements BaseColumns {
+
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_RELATIONS).build();
+
+        public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_RELATIONS;
+        public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_RELATIONS;
+
+        //Table Name
+        public static final String TABLE_NAME = "relation";
+        public static final String COLUMN_PATIENT_ID = "patient_id";
+        public static final String COLUMN_CHILD_ID = "child_id";
+
+        public static Uri buildProviderUri(Long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+    }
 }

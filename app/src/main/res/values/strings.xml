@@ -10,8 +10,11 @@
     <string name="menu_item_text">Dashboard</string>
     <string name="menu_item_pill">Take Medication</string>
     <string name="contract">com.emyyn.riley.ember.app</string>
-    <string name="pref_patient_default">Tbt3KuCY0B5PSrJvCu2j-PlK.aiHsu2xUjUM8bWpetXoB</string>
-    <string name="pref_patient_key">Tbt3KuCY0B5PSrJvCu2j-PlK.aiHsu2xUjUM8bWpetXoB</string>
-    <string name="patientId">Tbt3KuCY0B5PSrJvCu2j-PlK.aiHsu2xUjUM8bWpetXoB</string>
+    <string name="pref_patient_default">7</string>
+    <string name="pref_patient_key">patient_key</string>
+    <string name="patientId">7</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>
