@@ -8,7 +8,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.emyyn.riley.ember.dashboard.MedicationOrderAdpater;
+import com.emyyn.riley.ember.medication.MedicationOrderAdpater;
 import com.emyyn.riley.ember.data.EmberContract;
 import com.emyyn.riley.ember.data.EmberContract.PatientEntry;
 

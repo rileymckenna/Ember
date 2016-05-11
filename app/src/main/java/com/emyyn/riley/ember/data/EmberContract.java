@@ -5,6 +5,7 @@ import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.text.format.Time;
+import android.util.Log;
 
 /**
  * Created by Riley on 4/30/2016.
@@ -164,8 +165,6 @@ public class EmberContract {
         public static Uri buildPatientUri(String id) {
             return CONTENT_URI.buildUpon().appendPath(id).build();
         }
-
-
     }
 
     public static final class MedicationAdministrationEntry implements BaseColumns {
@@ -249,6 +248,16 @@ public class EmberContract {
 
         public static Uri buildProviderUri(Long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+        //content://com.emyyn.riley.ember.app/relation/patient/48
+        public static Uri buildFamilyUri(String parent) {
+            return CONTENT_URI.buildUpon().appendPath("patient").appendPath(parent).build();
+        }
+
+        public static String getParentId(Uri uri) {
+            Log.i("GetPatientId", uri.getPathSegments().get(2).toString());
+            return uri.getPathSegments().get(2);
         }
     }
 }

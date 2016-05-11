@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.emyyn.riley.ember.MedicationDetails;
+import com.emyyn.riley.ember.medication.MedicationDetails;
 import com.emyyn.riley.ember.R;
 
 import java.util.ArrayList;

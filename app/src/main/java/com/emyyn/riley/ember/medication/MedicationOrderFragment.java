@@ -1,4 +1,4 @@
-package com.emyyn.riley.ember;
+package com.emyyn.riley.ember.medication;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -15,16 +15,19 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.emyyn.riley.ember.R;
+import com.emyyn.riley.ember.Utility;
 import com.emyyn.riley.ember.dashboard.FakeMedicationOrders;
-import com.emyyn.riley.ember.dashboard.MedicationOrderAdpater;
 import com.emyyn.riley.ember.data.EmberContract;
 
 import org.json.JSONException;
 
 import java.text.ParseException;
 
-
-public class DashboardFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+/**
+ * Created by Riley on 5/6/2016.
+ */
+public class MedicationOrderFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final int MEDICATION_ORDER_LOADER = 0;
     private final String TAG = this.getClass().getSimpleName();
@@ -62,9 +65,10 @@ public class DashboardFragment extends Fragment implements LoaderManager.LoaderC
     static final int COLUMN_NAME_FAMILY = 30;
 
 
-    private MedicationOrderAdpater adpater;
 
-    public DashboardFragment() {
+    private MedicationOrderAdpater mMedicationOrderAdapter;
+
+    public MedicationOrderFragment() {
 
     }
 
@@ -88,10 +92,10 @@ public class DashboardFragment extends Fragment implements LoaderManager.LoaderC
         }
 
 
-        adpater = new MedicationOrderAdpater(getActivity(), null, 0);
+        mMedicationOrderAdapter = new MedicationOrderAdpater(getActivity(), null, 0);
         rootView = inflater.inflate(R.layout.content_main, parent, false);
         ListView lv = (ListView) rootView.findViewById(R.id.listView);
-        lv.setAdapter(adpater);
+        lv.setAdapter(mMedicationOrderAdapter);
         // Log.i(TAG, "adapter Set");
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -133,20 +137,20 @@ public class DashboardFragment extends Fragment implements LoaderManager.LoaderC
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        adpater.swapCursor(data);
+        mMedicationOrderAdapter.swapCursor(data);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        adpater.swapCursor(null);
+        mMedicationOrderAdapter.swapCursor(null);
     }
 
-    public static DashboardFragment newInstance(int position) {
+    public static MedicationOrderFragment newInstance(int position) {
 
-        DashboardFragment fragment = new DashboardFragment();
+        MedicationOrderFragment medicationFragment = new MedicationOrderFragment();
         Bundle args = new Bundle();
         args.putInt("Args",position);
-        fragment.setArguments(args);
-        return fragment;
+        medicationFragment.setArguments(args);
+        return medicationFragment;
     }
 }

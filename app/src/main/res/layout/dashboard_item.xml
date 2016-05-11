@@ -36,9 +36,8 @@ android:weightSum="1">
     android:layout_height="wrap_content"
     android:text="doses"
     android:textAppearance="?android:attr/textAppearanceMedium"
-    android:layout_below="@+id/dashboard_name"
-    android:layout_alignStart="@+id/dashboard_name"
-        android:layout_alignEnd="@+id/details_title_dose" />
+        android:layout_below="@+id/dashboard_name"
+        android:layout_alignStart="@+id/dashboard_name" />
 
 <TextView
     android:id="@+id/details_title_dose"
@@ -91,5 +90,14 @@ android:weightSum="1">
     android:textAppearance="?android:attr/textAppearanceSmall"
     android:layout_below="@+id/details_refill_progress"
     android:layout_alignEnd="@+id/details_dose_tv" />
+
+    <TextView
+        android:id="@+id/details_dose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="take"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_below="@+id/details_dosage"
+        android:layout_alignStart="@+id/details_dosage" />
 </RelativeLayout>
 </android.support.v7.widget.CardView>

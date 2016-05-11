@@ -55,19 +55,19 @@ public class FakeMedicationOrders {
     public FakeMedicationOrders(Context activity) throws JSONException, ParseException {
         mContext = activity;
 
-        setMedicationOrderData();
+        // setMedicationOrderData();
         //Log.i("", "SetMedicationOrderData");
-        setMedicationData();
+        //  setMedicationData();
         //Log.i("", "SetMedicationData");
-        setProviderData();
+        //  setProviderData();
         //Log.i("", "SetProviderData");
-        setPatientData();
+        //  setPatientData();
         //Log.i("", "SetPatientData");
-        setRelationData();
+        //  setRelationData();
 
     }
 
-    protected void bulkInsert(Uri uri){
+    protected void bulkInsert(Uri uri) {
         if (cVVector.size() > 0) {
             ContentValues[] cvArray = new ContentValues[cVVector.size()];
             cVVector.toArray(cvArray);

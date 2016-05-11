@@ -1,4 +1,4 @@
-package com.emyyn.riley.ember.dashboard;
+package com.emyyn.riley.ember.medication;
 
 import android.content.Context;
 import android.database.Cursor;

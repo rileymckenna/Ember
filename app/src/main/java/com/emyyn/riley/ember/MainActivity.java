@@ -22,7 +22,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.emyyn.riley.ember.dashboard.MedicationOrderFragment;
+import com.emyyn.riley.ember.dashboard.DashboardFragment;
+import com.emyyn.riley.ember.medication.MedicationOrderFragment;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {

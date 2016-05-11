@@ -1,4 +1,4 @@
-package com.emyyn.riley.ember;
+package com.emyyn.riley.ember.medication;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.TextView;
 
+import com.emyyn.riley.ember.R;
 import com.emyyn.riley.ember.data.EmberProvider;
 
 public class MedicationDetails extends AppCompatActivity  {

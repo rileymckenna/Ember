@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MedicationDetails"
+            android:name=".medication.MedicationDetails"
             android:label="@string/title_activity_medication_details"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
