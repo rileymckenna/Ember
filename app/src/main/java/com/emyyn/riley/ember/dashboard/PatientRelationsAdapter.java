@@ -40,7 +40,7 @@ public class PatientRelationsAdapter extends CursorAdapter {
     private String start;
     private String last;
     private String status;
-    private int freq = 0;
+    private int freq = 1;
     private String next_dose;
 
 
