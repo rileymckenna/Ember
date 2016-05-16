@@ -53,6 +53,9 @@ public class EmberContract {
         }
 
 
+        public static String getMedicationUri(Uri u) {
+            return u.getPathSegments().get(2);
+        }
     }
 
     public static final class MedicationOrderEntry implements BaseColumns {
@@ -112,6 +115,9 @@ public class EmberContract {
             return uri.getPathSegments().get(1);
         }
 
+        public static Uri buildFamilyMedicationOrderForPatientId(String patientId) {
+           return CONTENT_URI.buildUpon().appendPath("family").appendPath(patientId).build();
+        }
     }
 
     //Patient

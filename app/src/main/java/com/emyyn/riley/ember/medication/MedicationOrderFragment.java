@@ -17,7 +17,7 @@ import android.widget.ListView;
 
 import com.emyyn.riley.ember.R;
 import com.emyyn.riley.ember.Utility;
-import com.emyyn.riley.ember.dashboard.FakeMedicationOrders;
+import com.emyyn.riley.ember.data.FakeMedicationOrders;
 import com.emyyn.riley.ember.data.EmberContract;
 
 import org.json.JSONException;
@@ -31,38 +31,29 @@ public class MedicationOrderFragment extends Fragment implements LoaderManager.L
 
     public static final int MEDICATION_ORDER_LOADER = 0;
     private final String TAG = this.getClass().getSimpleName();
-    private static final String[] MEDICATION_ORDER_COLUMNS = Utility.getMedicationOrderColumns();
+    private static final String[] MEDICATION_ORDER_COLUMNS = Utility.getDashboardColumns();
 
-    static final int COLUMN_MED_KEY = 1;
-    static final int COLUMN_MEDICATION_ORDER_ID = 2;
-    static final int COLUMN_PATIENT_KEY = 3;
-    static final int COLUMN_PRESCRIBER_KEY = 4;
-    static final int COLUMN_DISPENSE_SUPPLY_VALUE = 5;
-    static final int COLUMN_DATE_WRITTEN = 6;
-    static final int COLUMN_DISPENSE_SUPPLY_UNIT = 7;
-    static final int COLUMN_DISPENSE_SUPPLY_CODE = 8;
-    static final int COLUMN_DISPENSE_QUANTITY = 9;
-    static final int COLUMN_VALID_START = 10;
-    static final int COLUMN_VALID_END = 11;
-    static final int COLUMN_DOSAGE_INSTRUCTIONS_TEXT = 12;
-    static final int COLUMN_DOSAGE_INSTRUCTIONS_ASNEEDED = 13;
-    static final int COLUMN_DOSAGE_INSTRUCTIONS_ROUTE = 14;
-    static final int COLUMN_DOSAGE_INSTRUCTIONS_METHOD = 15;
-    static final int COLUMN_DOSAGE_INSTRUCTIONS_TIMING_FREQUENCY = 16;
-    static final int COLUMN_DOSAGE_INSTRUCTIONS_TIMING_PERIOD = 17;
-    static final int COLUMN_DOSAGE_INSTRUCTIONS_TIMING_PERIOD_UNITS = 18;
-    static final int COLUMN_DOSAGE_INSTRUCTIONS_TIMING_START = 19;
-    static final int COLUMN_DOSAGE_INSTRUCTIONS_TIMING_END = 20;
-    static final int COLUMN_DOSAGE_INSTRUCTIONS_DOSE_VALUE = 21;
-    static final int COLUMN_DOSAGE_INSTRUCTIONS_DOSE_CODE = 22;
-    static final int COLUMN_LAST_UPDATED_AT = 23;
-    static final int COLUMN_REASON_GIVEN = 24;
-    static final int COLUMN_STATUS = 25;
-    static final int COLUMN_LAST_TAKEN = 26;
-    static final int COLUMN_RUNNING_TOTAL = 27;
-    static final int COLUMN_PRODUCT = 28;
-    static final int COLUMN_NAME_GIVEN = 29;
-    static final int COLUMN_NAME_FAMILY = 30;
+    static final int COLUMN_MED_KEY = 0;
+    static final int COLUMN_MEDICATION_ORDER_ID = 1;
+    static final int COLUMN_PATIENT_KEY = 2;
+    static final int COLUMN_DISPENSE_SUPPLY_VALUE = 3;
+    static final int COLUMN_DISPENSE_SUPPLY_UNIT = 4;
+    static final int COLUMN_DISPENSE_QUANTITY = 5;
+    static final int COLUMN_VALID_START = 5;
+    static final int COLUMN_VALID_END = 6;
+    static final int COLUMN_LAST_UPDATED_AT = 7;
+    static final int COLUMN_STATUS = 8;
+    static final int COLUMN_LAST_TAKEN = 9;
+    static final int COLUMN_RUNNING_TOTAL = 10;
+    static final int COLUMN_PRODUCT = 11;
+    static final int COLUMN_NAME_GIVEN = 12;
+    static final int COLUMN_NAME_FAMILY = 13;
+    static final int COLUMN_DS_VALUE = 14;
+    static final int COLUMN_DS_CODE = 15;
+    static final int COLUMN_DOSAGE_INSTRUCTIONS_TEXT = 16;
+    static final int COLUMN_DOSAGE_INSTRUCTIONS_FREQUENCY = 17;
+    static final int COLUMN_PROVIDER_NAME = 18;
+    static final int COLUMN_REASON = 19;
 
 
 
@@ -125,8 +116,8 @@ public class MedicationOrderFragment extends Fragment implements LoaderManager.L
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         String patientId = getActivity().getString(R.string.pref_patient_default);
 
-        Uri medicationOrderForPatientUri = EmberContract.MedicationOrderEntry.buildMedicationOrderWithPatientId(patientId);
-        Log.i("Uri", medicationOrderForPatientUri.toString());
+        Uri medicationOrderForPatientUri = EmberContract.MedicationOrderEntry.buildFamilyMedicationOrderForPatientId(patientId);
+        Log.i("Medication OF Uri", medicationOrderForPatientUri.toString());
         return new CursorLoader(getActivity(),
                 medicationOrderForPatientUri,
                 MEDICATION_ORDER_COLUMNS,

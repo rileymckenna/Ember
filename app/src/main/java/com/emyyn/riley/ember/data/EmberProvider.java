@@ -55,6 +55,7 @@ public class EmberProvider extends ContentProvider {
     static final int MEDICATION_ORDERS = 503;
     static final int RELATIONS = 600;
     static final int RELATIONS_PATIENT = 601;
+    static final int FAMILY_BY_PARENT_ID = 700;
 
     private static UriMatcher buildUriMatcher() {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -72,6 +73,7 @@ public class EmberProvider extends ContentProvider {
         matcher.addURI(authority, PATH_MEDICATIONORDER + "/#", MEDICATION_ORDERS);
         matcher.addURI(authority, PATH_RELATIONS, RELATIONS);
         matcher.addURI(authority, PATH_RELATIONS + "/patient/*", RELATIONS_PATIENT);
+        matcher.addURI(authority, PATH_MEDICATIONORDER+ "/family/*", FAMILY_BY_PARENT_ID);
         //matcher.addURI(authority, PATH_MEDICATIONORDER, MEDICATION_ORDER);
 
         return matcher;
@@ -141,6 +143,8 @@ public class EmberProvider extends ContentProvider {
                 return MedicationAdministrationEntry.CONTENT_TYPE;
             case MEDICATION_ORDER_PATIENT:
                 return MedicationOrderEntry.CONTENT_TYPE;
+            case FAMILY_BY_PARENT_ID:
+                return MedicationOrderEntry.CONTENT_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -150,8 +154,6 @@ public class EmberProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         Cursor c;
-        Log.i("Query URi", uri.toString());
-        Log.i("Matcher", Integer.toString(sUriMatcher.match(uri)));
         switch (sUriMatcher.match(uri)) {
 
             case PATIENT: {
@@ -162,6 +164,19 @@ public class EmberProvider extends ContentProvider {
                         null,
                         null,
                         sortOrder);
+                break;
+            }
+            case FAMILY_BY_PARENT_ID: {
+                String id = EmberContract.MedicationOrderEntry.getMedicationOrderId(uri);
+                Log.i("EmberProvider", "family id");
+                c = mOpenHelper.getReadableDatabase().rawQuery("SELECT " + Utility.queryColumns(Utility.getMedicationOrderColumns()) + " FROM patient\n" +
+                        "INNER JOIN relation\n" +
+                        "ON relation.patient_id = patient.patient_id\n" +
+                        "INNER JOIN medication_order\n" +
+                        "ON relation.child_id = medication_order.patient_id\n" +
+                        "INNER JOIN medication \n" +
+                        "ON medication_order.medication_id = medication._id\n" +
+                        "WHERE relation.patient_id = ?", new String[]{id});
                 break;
             }
             case MEDICATION_ORDER: {
@@ -181,16 +196,23 @@ public class EmberProvider extends ContentProvider {
                         "ON relation.child_id = medication_order.patient_id\n" +
                         "INNER JOIN medication \n" +
                         "ON medication_order.medication_id = medication._id\n" +
+                        "INNER JOIN provider ON  provider._id = medication_order.prescriber_id \n" +
                         "WHERE relation.patient_id = ? " +
                         "ORDER BY  medication_order.last_taken, medication_order.start_date;" , new String[]{id});
                 break;
             }
             case MEDICATION_ORDERS: {
                 String id = EmberContract.MedicationOrderEntry.getMedicationOrderId(uri);
-                c = mOpenHelper.getReadableDatabase().rawQuery("SELECT " + Utility.queryColumns(Utility.getMedicationOrderColumns()) + " FROM Patient \n" +
-                        "INNER JOIN medication_order ON medication_order.patient_id = patient.patient_id \n" +
-                        "INNER JOIN medication ON  medication._id = medication_order.medication_id \n" +
-                        "WHERE medication_order.medication_order_id = ?", new String[]{id});
+                c = mOpenHelper.getReadableDatabase().rawQuery("SELECT " + Utility.queryColumns(Utility.getDashboardColumns()) + " FROM patient\n" +
+                        "INNER JOIN relation\n" +
+                        "ON relation.child_id = patient.patient_id\n" +
+                        "INNER JOIN medication_order\n" +
+                        "ON relation.child_id = medication_order.patient_id\n" +
+                        "INNER JOIN medication \n" +
+                        "ON medication_order.medication_id = medication._id\n" +
+                        "INNER JOIN provider ON  provider._id = medication_order.prescriber_id \n" +
+                        "WHERE medication_order.medication_order_id = ?" +
+                        "LIMIT 1", new String[]{id});
                 break;
             }
             case MEDICATION: {
@@ -222,7 +244,7 @@ public class EmberProvider extends ContentProvider {
                         "ORDER BY patient.last_name", new String[]{id});
 
                 //c = getPatientWithMedicationOrder(uri, projection, sortOrder);
-                Log.i("Medication query count", Integer.toString(c.getCount()));
+
                 break;
             }
             default:

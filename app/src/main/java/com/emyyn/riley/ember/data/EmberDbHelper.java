@@ -13,7 +13,7 @@ import static com.emyyn.riley.ember.data.EmberContract.PatientEntry;
  * Created by Riley on 4/30/2016.
  */
 public class EmberDbHelper extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 18;
+    private static final int DATABASE_VERSION = 19;
     static final String DATABASE_NAME = "ember.db";
 
     private static final String TEXT = " TEXT, ";

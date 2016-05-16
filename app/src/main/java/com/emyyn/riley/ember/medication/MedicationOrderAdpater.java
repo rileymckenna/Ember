@@ -7,9 +7,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.emyyn.riley.ember.R;
+import com.emyyn.riley.ember.Utility;
 
 /**
  * Created by Riley on 5/6/2016.
@@ -17,56 +19,92 @@ import com.emyyn.riley.ember.R;
 public class MedicationOrderAdpater extends CursorAdapter {
 
 
+
+
     public MedicationOrderAdpater(Context context, Cursor c, int flags) {
         super(context, c, flags);
     }
 
-    public String getPatientName() {
-        return patientName;
-    }
     private String running_total;
     private String patientName;
     private String prescription;
     private String instructions_text;
-    private  String dose_value;
-    private  String dose_code;
-    private   String timing_period;
-    private  String method;
-    private  String timing_frequency;
+    private String dose_value;
+    private String dose_code;
+    private String timing_period;
+    private String method;
+    private String timing_frequency;
+    private String start;
+    private String last;
+    private String ds_value;   //total number of pills dispensed
+    private String status;
+    private int freq = 1;
+    private String next_dose;
+    private String provider_name;
+    private String reason;
 
-    private void convertCursorRowToUXFormat(Cursor cursor) {
+    TextView details_name;
+    TextView details_status;
+    TextView extra;
+    TextView next_doses;
+    TextView last_dose;
+    TextView prescriptions;
+    TextView reasons;
+    TextView prescriber;
+    TextView directions;
+    TextView remaining_prescription;
+    ProgressBar details_refill_progress;
 
-         patientName = cursor.getString(MedicationOrderFragment.COLUMN_NAME_GIVEN);
-         prescription = cursor.getString(MedicationOrderFragment.COLUMN_PRODUCT);
-         instructions_text = cursor.getString(MedicationOrderFragment.COLUMN_DOSAGE_INSTRUCTIONS_TEXT);
-         dose_value = cursor.getString(MedicationOrderFragment.COLUMN_DOSAGE_INSTRUCTIONS_DOSE_VALUE);
-         dose_code = cursor.getString(MedicationOrderFragment.COLUMN_DOSAGE_INSTRUCTIONS_DOSE_CODE);
-         timing_period = cursor.getString(MedicationOrderFragment.COLUMN_DOSAGE_INSTRUCTIONS_TIMING_PERIOD);
-         method = cursor.getString(MedicationOrderFragment.COLUMN_DOSAGE_INSTRUCTIONS_METHOD);
-         timing_frequency = cursor.getString(MedicationOrderFragment.COLUMN_DOSAGE_INSTRUCTIONS_TIMING_FREQUENCY);
-        running_total= cursor.getString(MedicationOrderFragment.COLUMN_RUNNING_TOTAL);
-
-    }
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
 
-        View view = LayoutInflater.from(context).inflate(R.layout.dashboard_item, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.content_medication_details, parent, false);
         return view;
     }
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        convertCursorRowToUXFormat(cursor);
-        Log.i("Adpater", patientName);
-        TextView dashboard_name = (TextView) view.findViewById(R.id.dashboard_name);
-        TextView details_dosage = (TextView) view.findViewById(R.id.details_dosage);
-        TextView details_dose_tv = (TextView) view.findViewById(R.id.details_dose_tv);
-        TextView details_refills_tv = (TextView) view.findViewById(R.id.details_refills_tv);
 
-        details_dosage.setText(instructions_text);
-        details_dose_tv.setText(timing_frequency);
-        details_refills_tv.setText(running_total);
-        dashboard_name.setText(prescription);
+        running_total = cursor.getString(MedicationOrderFragment.COLUMN_RUNNING_TOTAL);
+        patientName = cursor.getString(MedicationOrderFragment.COLUMN_NAME_GIVEN);
+        prescription = cursor.getString(MedicationOrderFragment.COLUMN_PRODUCT);
+        dose_code = cursor.getString(MedicationOrderFragment.COLUMN_DS_CODE);
+        dose_value = cursor.getString(MedicationOrderFragment.COLUMN_DS_VALUE);
+        last = cursor.getString(MedicationOrderFragment.COLUMN_LAST_TAKEN);
+        reason = cursor.getString(MedicationOrderFragment.COLUMN_REASON);
+        status = cursor.getString(MedicationOrderFragment.COLUMN_STATUS);
+        instructions_text = cursor.getString(MedicationOrderFragment.COLUMN_DOSAGE_INSTRUCTIONS_TEXT);
+        provider_name = cursor.getString(MedicationOrderFragment.COLUMN_PROVIDER_NAME);
+        ds_value = cursor.getString(MedicationOrderFragment.COLUMN_DISPENSE_SUPPLY_VALUE);
+
+        details_refill_progress.setMax(Integer.parseInt(ds_value));
+
+        details_name = (TextView) view.findViewById(R.id.details_name);
+        details_status = (TextView) view.findViewById(R.id.details_status);
+        //extra = (TextView) view.findViewById(R.id.details_extra) ;
+        next_doses = (TextView) view.findViewById(R.id.next_dose);
+        last_dose = (TextView) view.findViewById(R.id.last_dose);
+        prescriptions = (TextView) view.findViewById(R.id.prescription);
+        reasons = (TextView) view.findViewById(R.id.reason);
+        prescriber = (TextView) view.findViewById(R.id.prescriber);
+        directions = (TextView) view.findViewById(R.id.directions);
+        remaining_prescription = (TextView) view.findViewById(R.id.remaining_prescription);
+
+        details_refill_progress = (ProgressBar) view.findViewById(R.id.details_refill_progress);
+
+        details_name.setText(prescription +  " (" + dose_value + " " + dose_code +")");
+        //extra.setText( "(" + dose_value + " " + dose_code +")");
+        details_status.setText(Utility.getStatus(status));
+        next_doses.setText(next_dose);
+        last_dose.setText(last);
+        prescriptions.setText(prescription);
+        reasons.setText(reason);
+        prescriber.setText(provider_name);
+        directions.setText(instructions_text);
+        remaining_prescription.setText(running_total);
+
+        details_refill_progress.setProgress(Integer.parseInt(running_total));
+
     }
 }

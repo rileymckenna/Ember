@@ -4,93 +4,66 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.StrictMode;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.emyyn.riley.ember.R;
+import com.emyyn.riley.ember.Utility;
+import com.emyyn.riley.ember.data.EmberContract;
+import com.emyyn.riley.ember.data.EmberDbHelper;
 import com.emyyn.riley.ember.data.EmberProvider;
 
-public class MedicationDetails extends AppCompatActivity  {
+public class MedicationDetails extends ActionBarActivity {
+
 
     private static final String TAG = "MedicationDetails";
-    private String uri = "";
-    private EmberProvider provider = new EmberProvider();
-    private Cursor c;
-
-    static final int COLUMN_MED_KEY = 1;
-    static final int COLUMN_MEDICATION_ORDER_ID = 2;
-    static final int COLUMN_PATIENT_KEY = 3;
-    static final int COLUMN_PRESCRIBER_KEY = 4;
-    static final int COLUMN_DISPENSE_SUPPLY_VALUE = 5;
-    static final int COLUMN_DATE_WRITTEN = 6;
-    static final int COLUMN_DISPENSE_SUPPLY_UNIT = 7;
-    static final int COLUMN_DISPENSE_SUPPLY_CODE = 8;
-    static final int COLUMN_DISPENSE_QUANTITY = 9;
-    static final int COLUMN_VALID_START = 10;
-    static final int COLUMN_VALID_END = 11;
-    static final int COLUMN_DOSAGE_INSTRUCTIONS_TEXT = 12;
-    static final int COLUMN_DOSAGE_INSTRUCTIONS_ASNEEDED = 13;
-    static final int COLUMN_DOSAGE_INSTRUCTIONS_ROUTE = 14;
-    static final int COLUMN_DOSAGE_INSTRUCTIONS_METHOD = 15;
-    static final int COLUMN_DOSAGE_INSTRUCTIONS_TIMING_FREQUENCY = 16;
-    static final int COLUMN_DOSAGE_INSTRUCTIONS_TIMING_PERIOD = 17;
-    static final int COLUMN_DOSAGE_INSTRUCTIONS_TIMING_PERIOD_UNITS = 18;
-    static final int COLUMN_DOSAGE_INSTRUCTIONS_TIMING_START = 19;
-    static final int COLUMN_DOSAGE_INSTRUCTIONS_TIMING_END = 20;
-    static final int COLUMN_DOSAGE_INSTRUCTIONS_DOSE_VALUE = 21;
-    static final int COLUMN_DOSAGE_INSTRUCTIONS_DOSE_CODE = 22;
-    static final int COLUMN_LAST_UPDATED_AT = 23;
-    static final int COLUMN_REASON_GIVEN = 24;
-    static final int COLUMN_PRODUCT = 25;
-    static final int COLUMN_NAME_GIVEN = 26;
-    static final int COLUMN_NAME_FAMILY = 27;
-    static final int COLUMN_STATUS = 28;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_medication_details);
-        final TextView v = (TextView) findViewById(R.id.details_name);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        String content  = "";
-        Intent intent = getIntent();
-        if (intent != null){
-            content = intent.getDataString();
-            uri = content;
-            Log.i(TAG, content.toString());
+
+        if (savedInstanceState == null) {
+            // Create the detail fragment and add it to the activity
+            // using a fragment transaction.
+
+            Bundle arguments = new Bundle();
+            arguments.putParcelable(DetailFragment.DETAIL_URI, getIntent().getData());
+
+            DetailFragment fragment = new DetailFragment();
+            fragment.setArguments(arguments);
+
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.details_container, fragment)
+                    .commit();
         }
-        Uri u = Uri.parse(uri);
-        try {
-            c = provider.query(u, null, null, null, null);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-
-
-
-//        FabSpeedDial fabSpeedDial = (FabSpeedDial) findViewById(R.id.fab);
-//        if (fabSpeedDial != null) {
-//            fabSpeedDial.setMenuListener(new SimpleMenuListenerAdapter() {
-//                @Override
-//                public boolean onPrepareMenu(NavigationMenu navigationMenu) {
-//                    // TODO: Do something with yout menu items, or return false if you don't want to show them
-//                    return true;
-//                }
-//                @Override
-//                public boolean onMenuItemSelected(MenuItem menuItem) {
-//                    //TODO: Start some activity
-////                    Snackbar.make(v != null ? v : null, "Replace with your own action", Snackbar.LENGTH_LONG)
-////                            .setAction("Action", null).show();
-//                    return false;
-//                }
-//            });
-//        }
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            //startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

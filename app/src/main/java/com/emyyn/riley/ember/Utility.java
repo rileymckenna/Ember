@@ -9,6 +9,7 @@ import com.emyyn.riley.ember.data.EmberContract;
 
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
+import org.joda.time.Minutes;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -35,12 +36,10 @@ public class Utility {
                 d2 = c.getTime();
                 DateTime dt1 = new DateTime(d1);
                 DateTime dt2 = new DateTime(d2);
-                next_dose = Hours.hoursBetween(dt2, dt1).getHours() % 24 + " hours";
+                next_dose = Hours.hoursBetween(dt2, dt1).getHours() +"";
             }catch (Exception e){
                 e.printStackTrace();
             }
-        Log.i("Start date", String.valueOf(d1));
-        Log.i("End date", String.valueOf(d2));
         return next_dose;
 }
 
@@ -92,13 +91,22 @@ public class Utility {
             EmberContract.MedicationEntry.TABLE_NAME + "." + EmberContract.MedicationEntry.COLUMN_PRODUCT,
             EmberContract.PatientEntry.TABLE_NAME + "." + EmberContract.PatientEntry.COLUMN_NAME_GIVEN,
             EmberContract.PatientEntry.TABLE_NAME + "." + EmberContract.PatientEntry.COLUMN_NAME_FAMILY,
-            EmberContract.RelationEntry.TABLE_NAME + "." + EmberContract.RelationEntry.COLUMN_CHILD_ID,
-            EmberContract.RelationEntry.TABLE_NAME + "." + EmberContract.RelationEntry.COLUMN_PATIENT_ID,
+            EmberContract.MedicationOrderEntry.COLUMN_DOSAGE_INSTRUCTIONS_DOSE_VALUE,
+            EmberContract.MedicationOrderEntry.COLUMN_DOSAGE_INSTRUCTIONS_DOSE_CODE,
             EmberContract.MedicationOrderEntry.COLUMN_DOSAGE_INSTRUCTIONS_TEXT,
             EmberContract.MedicationOrderEntry.COLUMN_DOSAGE_INSTRUCTIONS_TIMING_FREQUENCY,
+            EmberContract.ProviderEntry.TABLE_NAME + "." + EmberContract.ProviderEntry.COLUMN_NAME_GIVEN,
+            EmberContract.MedicationOrderEntry.COLUMN_REASON_GIVEN,
+
+
+            //Ids dont need to be counted
             EmberContract.MedicationEntry.TABLE_NAME + "." + EmberContract.MedicationEntry._ID,
             EmberContract.MedicationOrderEntry.TABLE_NAME + "." +  EmberContract.MedicationOrderEntry._ID ,
-            EmberContract.PatientEntry.TABLE_NAME + "."+ EmberContract.PatientEntry._ID
+            EmberContract.PatientEntry.TABLE_NAME + "."+ EmberContract.PatientEntry._ID,
+            EmberContract.ProviderEntry.TABLE_NAME + "." + EmberContract.ProviderEntry._ID,
+            EmberContract.RelationEntry.TABLE_NAME + "." + EmberContract.RelationEntry.COLUMN_CHILD_ID,
+            EmberContract.RelationEntry.TABLE_NAME + "." + EmberContract.RelationEntry.COLUMN_PATIENT_ID,
+
     };
 
     public static String[] getMedicationOrderColumns() {
@@ -137,6 +145,7 @@ public class Utility {
             EmberContract.MedicationEntry.TABLE_NAME + "." + EmberContract.MedicationEntry.COLUMN_PRODUCT,
             EmberContract.PatientEntry.TABLE_NAME + "." + EmberContract.PatientEntry.COLUMN_NAME_GIVEN,
             EmberContract.PatientEntry.TABLE_NAME + "." + EmberContract.PatientEntry.COLUMN_NAME_FAMILY
+
     };
 
     public static String queryColumns(String[] strings) {
@@ -152,5 +161,28 @@ public class Utility {
         }
 
         return temp;
+    }
+
+    public static int getNextDoseMin(String start) {
+        Calendar c = Calendar.getInstance();
+        int next_dose = 0;
+        Date d1 = null;
+        Date d2 = null;
+        try {
+            d1 = formatDate(start);
+            d2 = c.getTime();
+            DateTime dt1 = new DateTime(d1);
+            DateTime dt2 = new DateTime(d2);
+            next_dose = Minutes.minutesBetween(dt2, dt1).getMinutes();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return next_dose;
+    }
+
+    public static String getStatus(String b){
+        if (b.contains("true")) {return "Active";}
+        else if (b.contains("false")) {return "Suspended";}
+        return b;
     }
 }

@@ -6,6 +6,7 @@ import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.emyyn.riley.ember.R;
@@ -26,19 +27,21 @@ public class PatientRelationsAdapter extends CursorAdapter {
     public String getPatientName() {
         return patientName;
     }
+
     private String running_total;
     private String patientName;
     private String prescription;
     private String instructions_text;
-    private  String dose_value;
-    private  String dose_code;
-    private   String timing_period;
-    private  String method;
-    private  String timing_frequency;
+    private String dose_value;
+    private String dose_code;
+    private String timing_period;
+    private String method;
+    private String timing_frequency;
     private String child_id;
     private String parent_id;
     private String start;
     private String last;
+    private String ds_value;   //total number of pills dispensed
     private String status;
     private int freq = 1;
     private String next_dose;
@@ -46,18 +49,19 @@ public class PatientRelationsAdapter extends CursorAdapter {
 
     private void convertCursorRowToUXFormat(Cursor cursor) throws ParseException {
         //Log.i("Columns: " , Utility.queryColumns(Utility.getDashboardColumns()));
-         patientName = cursor.getString(DashboardFragment.COLUMN_NAME_GIVEN);
-         prescription = cursor.getString(DashboardFragment.COLUMN_PRODUCT);
-         instructions_text = cursor.getString(DashboardFragment.COLUMN_DOSAGE_INSTRUCTIONS_TEXT);
+        patientName = cursor.getString(DashboardFragment.COLUMN_NAME_GIVEN);
+        prescription = cursor.getString(DashboardFragment.COLUMN_PRODUCT);
+        instructions_text = cursor.getString(DashboardFragment.COLUMN_DOSAGE_INSTRUCTIONS_TEXT);
         child_id = cursor.getString(DashboardFragment.COLUMN_CHILD_ID);
         parent_id = cursor.getString(DashboardFragment.COLUMN_PARENT_ID);
         start = cursor.getString(DashboardFragment.COLUMN_VALID_START);
         last = cursor.getString(DashboardFragment.COLUMN_LAST_TAKEN);
         status = cursor.getString(DashboardFragment.COLUMN_STATUS);
-        running_total= cursor.getString(DashboardFragment.COLUMN_RUNNING_TOTAL);
+        running_total = cursor.getString(DashboardFragment.COLUMN_RUNNING_TOTAL);
+        ds_value = cursor.getString(DashboardFragment.COLUMN_DISPENSE_SUPPLY_VALUE);
 
-        instructions_text = instructions_text.substring(5,6);
-       // Log.i("instructions text: " , String.valueOf(Integer.decode(instructions_text)));
+        instructions_text = instructions_text.substring(5, 6);
+        // Log.i("instructions text: " , String.valueOf(Integer.decode(instructions_text)));
 
 
         try {
@@ -65,11 +69,20 @@ public class PatientRelationsAdapter extends CursorAdapter {
                 freq = Integer.decode(instructions_text);
             }
             if (last == null) {
-                next_dose = Utility.getNextDose(start);
+                int s = (Integer.parseInt(Utility.getNextDose(start)));
+                if (s > 0) {
+                    next_dose = String.valueOf(s);
+                } else if (s < 0)
+                    next_dose = "Past Due " + Math.abs(s) + " hours";
+                else {
+                    int i = Utility.getNextDoseMin(start);
+                    next_dose = String.valueOf(i) + " minutes";
+                }
             } else {
-                next_dose = Utility.getNextDose(last);
+                int s = Math.abs(Integer.parseInt(Utility.getNextDose(last)));
+                next_dose = String.valueOf(s);
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -90,22 +103,28 @@ public class PatientRelationsAdapter extends CursorAdapter {
         }
         //Log.i("Adpater", patientName);
         TextView dashboard_name = (TextView) view.findViewById(R.id.dashboard_name);
-        TextView details_dosage = (TextView) view.findViewById(R.id.details_dosage);
-        TextView details_dose_tv = (TextView) view.findViewById(R.id.details_dose_tv);
-        TextView details_refills_tv = (TextView) view.findViewById(R.id.details_refills_tv);
-        TextView details_dose = (TextView) view.findViewById(R.id.details_dose);
+        TextView details_status = (TextView) view.findViewById(R.id.prescription);
+        TextView details_next_dose = (TextView) view.findViewById(R.id.details_next_dose);
+        TextView remaining = (TextView) view.findViewById(R.id.remaining);
+        TextView details_text = (TextView) view.findViewById(R.id.details_text);
+        ProgressBar details_refill_progress = (ProgressBar) view.findViewById(R.id.details_refill_progress);
+        details_refill_progress.setMax(Integer.parseInt(ds_value));
 
         //details_dosage.setText("Take " + freq);
-        details_dose_tv.setText(next_dose);
-        details_refills_tv.setText(running_total);
-        details_dose.setText(getStatus((status) ));
-        details_dosage.setText(prescription );
-        dashboard_name.setText(patientName );
+        details_next_dose.setText(next_dose);
+        remaining.setText(running_total);
+        details_status.setText(Utility.getStatus((status)));
+        details_text.setText("Take " + instructions_text + getDoseText() + prescription);
+        dashboard_name.setText(patientName);
+        details_refill_progress.setProgress(Integer.parseInt(running_total));
     }
-    public String getStatus(String b){
-        if (b.contains("true")) {return "Active";}
-        else if (b.contains("false")) {return "Suspended";}
-        return b;
+
+    private String getDoseText() {
+        if (Integer.parseInt(instructions_text) > 1) {
+            return " doses of ";
+        } else {
+            return " dose of ";
+        }
     }
 
 }

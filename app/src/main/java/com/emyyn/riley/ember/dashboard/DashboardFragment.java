@@ -67,7 +67,6 @@ public class DashboardFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         View rootView;
-        Log.i(TAG, "onCreate");
         adpater = new PatientRelationsAdapter(getActivity(), null, 0);
         rootView = inflater.inflate(R.layout.content_main, parent, false);
         ListView lv = (ListView) rootView.findViewById(R.id.listView);
@@ -102,8 +101,6 @@ public class DashboardFragment extends Fragment implements LoaderManager.LoaderC
         String parentId = getActivity().getString(R.string.pref_patient_default);
 
         Uri uri = EmberContract.RelationEntry.buildFamilyUri(parentId);
-        Log.i("Uri", uri.toString());
-        Log.i("Columns: " , Utility.queryColumns(Utility.getDashboardColumns()));
         return new CursorLoader(getActivity(),
                 uri,
                 DASHBOARD_COLUMNS,

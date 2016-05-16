@@ -116,10 +116,10 @@ public class MyArrayAdapter extends RecyclerView.Adapter<MyArrayAdapter.ViewHold
             super(itemView);
             itemView.setOnClickListener(this);
             name = (TextView) itemView.findViewById(R.id.dashboard_name);
-            dose = (TextView) itemView.findViewById(R.id.details_dosage);
+            dose = (TextView) itemView.findViewById(R.id.prescription);
             appointment = (TextView) itemView.findViewById(R.id.details_extra);
-            refill = (TextView) itemView.findViewById(R.id.details_refills_tv);
-            timeTillNextMedication = (TextView) itemView.findViewById(R.id.details_dose_tv);
+            refill = (TextView) itemView.findViewById(R.id.remaining_prescription);
+            timeTillNextMedication = (TextView) itemView.findViewById(R.id.details_next_dose);
         }
 
         @Override
