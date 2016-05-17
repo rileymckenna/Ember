@@ -102,12 +102,12 @@ public class PatientRelationsAdapter extends CursorAdapter {
             e.printStackTrace();
         }
         //Log.i("Adpater", patientName);
-        TextView dashboard_name = (TextView) view.findViewById(R.id.dashboard_name);
-        TextView details_status = (TextView) view.findViewById(R.id.prescription);
+        TextView dashboard_name = (TextView) view.findViewById(R.id.alert_name);
+        TextView details_status = (TextView) view.findViewById(R.id.alert_status);
         TextView details_next_dose = (TextView) view.findViewById(R.id.details_next_dose);
         TextView remaining = (TextView) view.findViewById(R.id.remaining);
-        TextView details_text = (TextView) view.findViewById(R.id.details_text);
-        ProgressBar details_refill_progress = (ProgressBar) view.findViewById(R.id.details_refill_progress);
+        TextView details_text = (TextView) view.findViewById(R.id.dashboard_text);
+        ProgressBar details_refill_progress = (ProgressBar) view.findViewById(R.id.dashboard_progress);
         details_refill_progress.setMax(Integer.parseInt(ds_value));
 
         //details_dosage.setText("Take " + freq);

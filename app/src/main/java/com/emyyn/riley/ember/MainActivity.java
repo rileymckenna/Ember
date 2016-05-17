@@ -1,5 +1,10 @@
 package com.emyyn.riley.ember;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -8,6 +13,8 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -22,8 +29,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.emyyn.riley.ember.Alerts.AlertActivity;
 import com.emyyn.riley.ember.dashboard.DashboardFragment;
 import com.emyyn.riley.ember.medication.MedicationOrderFragment;
+
+import layout.Notifications;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -33,6 +43,9 @@ public class MainActivity extends AppCompatActivity
     private SectionsPagerAdapter mSectionsPagerAdapter = null;
     private TabLayout tabLayout;
     private final String TAG = this.getClass().getSimpleName();
+    private NotificationManager notificationManager;
+    private boolean isNotificationActive;
+    private int notifID = 34;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +53,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        Notifications.notify(this, "Thest", 5);
 
        // Log.i(TAG, "onCreate");
 //        if (savedInstanceState == null) {
@@ -58,6 +72,33 @@ public class MainActivity extends AppCompatActivity
 
         createTabs();
         toolbar.setTitle(tabLayout.getTabAt(0).getContentDescription().toString());
+    }
+
+    public void showNotification(View view) {
+        NotificationCompat.Builder notificationBuilder = new
+        NotificationCompat.Builder(this)
+                .setContentTitle("")
+                .setContentText("")
+                .setTicker("")
+                .setSmallIcon(R.drawable.pharmacy);
+
+        //Intent intent = new Intent(this, MoreInformationNotification.class);
+        TaskStackBuilder taskStackBuilder = TaskStackBuilder.create(this);
+        //taskStackBuilder.addParentStack(MoreInformationNotification.class);
+        //taskStackBuilder.addNextIntent(intent);
+        PendingIntent pendingIntent = taskStackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        notificationBuilder.setContentIntent(pendingIntent);
+        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+    notificationManager.notify( notifID, notificationBuilder.build());
+
+        isNotificationActive = true;
+    }
+
+    public void stopNotification(View view) {
+        if(isNotificationActive){
+            notificationManager.cancel(notifID);
+        }
     }
 
 
@@ -221,7 +262,7 @@ public class MainActivity extends AppCompatActivity
                 case 1:
                     return MedicationOrderFragment.newInstance(position);
                 case 2:
-                    return PlaceholderFragment.newInstance(position);
+                    return AlertActivity.newInstance(position);
                 default:
                     break;
             }

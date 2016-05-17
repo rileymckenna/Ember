@@ -4,10 +4,11 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -30,10 +31,20 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.emyyn.riley.ember.MainActivity" />
         </activity>
+
         <provider
-            android:authorities="com.emyyn.riley.ember.app"
             android:name=".data.EmberProvider"
-            />
+            android:authorities="com.emyyn.riley.ember.app" />
+
+        <activity
+            android:name=".Alerts.AlertActivity"
+            android:label="@string/title_activity_alert"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.emyyn.riley.ember.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

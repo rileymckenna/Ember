@@ -23,7 +23,7 @@ import com.emyyn.riley.ember.data.EmberContract;
 import com.emyyn.riley.ember.data.EmberDbHelper;
 import com.emyyn.riley.ember.data.EmberProvider;
 
-public class MedicationDetails extends ActionBarActivity {
+public class MedicationDetails extends AppCompatActivity {
 
 
     private static final String TAG = "MedicationDetails";
@@ -31,7 +31,9 @@ public class MedicationDetails extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_medication_details);
-
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         if (savedInstanceState == null) {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.

@@ -23,16 +23,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.widget.ShareActionProvider;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -127,13 +122,13 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
          extra = (TextView) rootView.findViewById(R.id.details_extra) ;
          next_doses = (TextView) rootView.findViewById(R.id.next_dose);
          last_dose = (TextView) rootView.findViewById(R.id.last_dose);
-         prescriptions = (TextView) rootView.findViewById(R.id.prescription);
+         prescriptions = (TextView) rootView.findViewById(R.id.alert_status);
          reasons = (TextView) rootView.findViewById(R.id.reason);
          prescriber = (TextView) rootView.findViewById(R.id.prescriber);
          directions = (TextView) rootView.findViewById(R.id.directions);
          remaining_prescription = (TextView) rootView.findViewById(R.id.remaining_prescription);
 
-        details_refill_progress = (ProgressBar) rootView.findViewById(R.id.details_refill_progress);
+        details_refill_progress = (ProgressBar) rootView.findViewById(R.id.alerts_progress);
         return rootView;
     }
 

@@ -18,7 +18,7 @@ android:orientation="vertical"
 android:weightSum="1">
 
 <TextView
-    android:id="@+id/dashboard_name"
+    android:id="@+id/alert_name"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:fontFamily="sans-serif"
@@ -31,13 +31,13 @@ android:weightSum="1">
     android:layout_marginStart="10dp" />
 
     <TextView
-    android:id="@+id/prescription"
+    android:id="@+id/alert_status"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:text="doses"
     android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_marginEnd="16dp"
-        android:layout_alignBottom="@+id/dashboard_name"
+        android:layout_alignBottom="@+id/alert_name"
         android:layout_alignParentEnd="true" />
 
     <TextView
@@ -48,12 +48,12 @@ android:weightSum="1">
     android:text="6 hours"
         android:textColor="@color/colorTextSmall"
     android:textAppearance="?android:attr/textAppearanceSmall"
-        android:layout_below="@+id/details_text"
-        android:layout_alignStart="@+id/details_text"
-        android:layout_marginTop="16dp" />
+        android:layout_below="@+id/dashboard_text"
+        android:layout_alignStart="@+id/dashboard_text"
+        android:layout_marginTop="24dp" />
 
 <ProgressBar
-    android:id="@+id/details_refill_progress"
+    android:id="@+id/dashboard_progress"
     style="?android:attr/progressBarStyleHorizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -75,15 +75,15 @@ android:weightSum="1">
     android:text="19/30"
     android:textAppearance="?android:attr/textAppearanceSmall"
     android:layout_alignTop="@+id/details_next_dose"
-    android:layout_alignEnd="@+id/prescription" />
+    android:layout_alignEnd="@+id/alert_status" />
 
     <TextView
-        android:id="@+id/details_text"
+        android:id="@+id/dashboard_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="take"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:layout_below="@+id/prescription"
-        android:layout_alignStart="@+id/dashboard_name" />
+        android:layout_below="@+id/alert_status"
+        android:layout_alignStart="@+id/alert_name" />
 </RelativeLayout>
 </android.support.v7.widget.CardView>

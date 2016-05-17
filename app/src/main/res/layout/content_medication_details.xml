@@ -50,7 +50,7 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/prescription"
+                android:id="@+id/alert_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
@@ -158,7 +158,7 @@
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
             <ProgressBar
-                android:id="@+id/details_refill_progress"
+                android:id="@+id/alerts_progress"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

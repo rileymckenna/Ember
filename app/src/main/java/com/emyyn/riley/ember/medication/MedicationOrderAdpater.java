@@ -3,7 +3,6 @@ package com.emyyn.riley.ember.medication;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -85,13 +84,13 @@ public class MedicationOrderAdpater extends CursorAdapter {
         //extra = (TextView) view.findViewById(R.id.details_extra) ;
         next_doses = (TextView) view.findViewById(R.id.next_dose);
         last_dose = (TextView) view.findViewById(R.id.last_dose);
-        prescriptions = (TextView) view.findViewById(R.id.prescription);
+        prescriptions = (TextView) view.findViewById(R.id.alert_status);
         reasons = (TextView) view.findViewById(R.id.reason);
         prescriber = (TextView) view.findViewById(R.id.prescriber);
         directions = (TextView) view.findViewById(R.id.directions);
         remaining_prescription = (TextView) view.findViewById(R.id.remaining_prescription);
 
-        details_refill_progress = (ProgressBar) view.findViewById(R.id.details_refill_progress);
+        details_refill_progress = (ProgressBar) view.findViewById(R.id.alerts_progress);
 
         details_name.setText(prescription +  " (" + dose_value + " " + dose_code +")");
         //extra.setText( "(" + dose_value + " " + dose_code +")");
