@@ -31,6 +31,7 @@ public class EmberProvider extends ContentProvider {
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();
 
+
     public EmberDbHelper getmOpenHelper() {
         return mOpenHelper;
     }
@@ -56,6 +57,7 @@ public class EmberProvider extends ContentProvider {
     static final int RELATIONS = 600;
     static final int RELATIONS_PATIENT = 601;
     static final int FAMILY_BY_PARENT_ID = 700;
+    static final int CHILDREN = 800;
 
     private static UriMatcher buildUriMatcher() {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -74,6 +76,7 @@ public class EmberProvider extends ContentProvider {
         matcher.addURI(authority, PATH_RELATIONS, RELATIONS);
         matcher.addURI(authority, PATH_RELATIONS + "/patient/*", RELATIONS_PATIENT);
         matcher.addURI(authority, PATH_MEDICATIONORDER+ "/family/*", FAMILY_BY_PARENT_ID);
+        matcher.addURI(authority, "/children/*", CHILDREN);
         //matcher.addURI(authority, PATH_MEDICATIONORDER, MEDICATION_ORDER);
 
         return matcher;
@@ -154,6 +157,7 @@ public class EmberProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         Cursor c;
+        Log.i("MatcherId: ", String.valueOf(sUriMatcher.match(uri)));
         switch (sUriMatcher.match(uri)) {
 
             case PATIENT: {
@@ -165,6 +169,15 @@ public class EmberProvider extends ContentProvider {
                         null,
                         sortOrder);
                 break;
+            }
+            case CHILDREN: {
+                String id = EmberContract.MedicationOrderEntry.getMedicationOrderId(uri);
+                Log.i("EmberProvider", "parent id");
+                c = mOpenHelper.getReadableDatabase().rawQuery("SELECT child_id \n" +
+                        "FROM patient\n" +
+                        "INNER JOIN relation\n" +
+                        "ON relation.patient_id = patient.patient_id\n" +
+                        "WHERE relation.patient_id = ?", new String[]{id});
             }
             case FAMILY_BY_PARENT_ID: {
                 String id = EmberContract.MedicationOrderEntry.getMedicationOrderId(uri);

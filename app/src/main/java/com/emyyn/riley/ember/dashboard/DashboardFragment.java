@@ -1,6 +1,7 @@
 package com.emyyn.riley.ember.dashboard;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -20,6 +21,10 @@ import com.emyyn.riley.ember.R;
 import com.emyyn.riley.ember.Utility;
 import com.emyyn.riley.ember.data.EmberContract;
 import com.emyyn.riley.ember.medication.MedicationDetails;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 
 public class DashboardFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -53,8 +58,8 @@ public class DashboardFragment extends Fragment implements LoaderManager.LoaderC
     static final int COLUMN_PARENT_ID = 25;
 
 
-
     private PatientRelationsAdapter adpater;
+    private ArrayList<String> childrenList = new ArrayList<>();
 
     public DashboardFragment() {
 
@@ -112,7 +117,6 @@ public class DashboardFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         String parentId = getActivity().getString(R.string.pref_patient_default);
-
         Uri uri = EmberContract.RelationEntry.buildFamilyUri(parentId);
         return new CursorLoader(getActivity(),
                 uri,
@@ -123,8 +127,31 @@ public class DashboardFragment extends Fragment implements LoaderManager.LoaderC
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        adpater.swapCursor(data);
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        Log.i("CursorCount", String.valueOf(cursor.getCount()));
+        childrenList.clear();
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                String val = cursor.getString(DashboardFragment.COLUMN_CHILD_ID);
+                if (!childrenList.contains(val)) {
+                    childrenList.add(val);
+                    Log.i("CursorChild", val);
+                }
+            }
+        }
+        Log.i("ListSize", String.valueOf(childrenList.size()));
+        if (!childrenList.isEmpty()) {
+            SharedPreferences settings = getContext().getSharedPreferences("ChildrenArray", 0);
+            SharedPreferences.Editor editor = settings.edit();
+            Set<String> set = new HashSet<String>(childrenList);
+            editor.putStringSet("Children", set);
+
+            // Commit the edits!
+            editor.commit();
+        }
+
+
+        adpater.swapCursor(cursor);
     }
 
     @Override

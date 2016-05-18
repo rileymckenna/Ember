@@ -2,6 +2,7 @@ package com.emyyn.riley.ember.Alerts;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,35 +24,39 @@ public class AlertAdapter extends CursorAdapter{
         super(context, c, flags);
     }
 
-    static final int COLUMN_MED_KEY = 0;
-    static final int COLUMN_MEDICATION_ORDER_ID = 1;
-    static final int COLUMN_PATIENT_KEY = 2;
-    //number of days prescription is supposed to last
-    static final int COLUMN_DISPENSE_SUPPLY_VALUE = 3;
-    //D, hr, associated with the suppose to last
-    static final int COLUMN_DISPENSE_SUPPLY_UNIT = 4;
-    //dispense supply * di_frequency
-    //static final int COLUMN_DISPENSE_QUANTITY = 5;
-    //used to calculate the period to administer the drugs
-    static final int COLUMN_VALID_START = 5;
-    //expiration date
-    static final int COLUMN_VALID_END = 6;
-    //used to calculate when to async with the server
-    static final int COLUMN_LAST_UPDATED_AT = 7;
-    //determines wheter or not the drug is active on the child or not for alerting and reminder purposes only. the expiration will determine when the drug will fall off the list unless it is all used up
-    static final int COLUMN_STATUS = 8;
-    //Used in conjunction with start to determine when the next dose will be used
-    static final int COLUMN_LAST_TAKEN = 9;
-    //Used to calculate the number of days before you run out. Running total = running total - di_text.getSubstring(5,5).
-    static final int COLUMN_RUNNING_TOTAL = 10;
-    //name of the drugs
-    static final int COLUMN_PRODUCT = 11;
-    //patients name
-    static final int COLUMN_NAME_GIVEN = 12;
-    static final int COLUMN_NAME_FAMILY = 13;
-    static final int COLUMN_CHILD_ID = 14;
-    static final int COLUMN_PARENT_ID = 15;
-    static final int COLUMN_DOSAGE_INSTRUCTIONS_TEXT = 16;
+    final static int _id=0;
+    final static int medication_order_id=1;
+    final static int medication_id=2;
+    final static int patient_id=3;
+    final static int prescriber_id=4;
+    final static int COLUMN_DISPENSE_SUPPLY_VALUE=5;
+    final static int date_written=6;
+    final static int COLUMN_DISPENSE_SUPPLY_UNIT=7;
+    final static int COLUMN_DS_CODE=8;
+    final static int COLUMN_DISPENSE_QUANTITY=9;
+    final static int COLUMN_VALID_START=10;
+    final static int COLUMN_VALID_END=11;
+    final static int COLUMN_DOSAGE_INSTRUCTIONS_TEXT=12;
+    final static int di_asneeded=13;
+    final static int d_route=14;
+    final static int di_method=15;
+    final static int COLUMN_DOSAGE_INSTRUCTIONS_FREQUENCY=16;
+    final static int di_period=17;
+    final static int di_period_units=18;
+    final static int di_start=19;
+    final static int di_end=20;
+    final static int di_dose_value=21;
+    final static int di_dose_code=22;
+    final static int COLUMN_LAST_UPDATED_AT=23;
+    final static int reason_given=24;
+    final static int COLUMN_STATUS=25;
+    final static int COLUMN_LAST_TAKEN=26;
+    final static int COLUMN_RUNNING_TOTAL=27;
+    final static int COLUMN_PRODUCT=28;
+    final static int COLUMN_NAME_GIVEN=29;
+    final static int COLUMN_NAME_FAMILY=30;
+
+
 
     private String running_total;
     private String patientName;
@@ -73,12 +78,11 @@ public class AlertAdapter extends CursorAdapter{
 
 
     private void convertCursorRowToUXFormat(Cursor cursor) throws ParseException {
+
         //Log.i("Columns: " , Utility.queryColumns(Utility.getDashboardColumns()));
         patientName = cursor.getString(COLUMN_NAME_GIVEN);
         prescription = cursor.getString(COLUMN_PRODUCT);
         instructions_text = cursor.getString(COLUMN_DOSAGE_INSTRUCTIONS_TEXT);
-        child_id = cursor.getString(COLUMN_CHILD_ID);
-        parent_id = cursor.getString(COLUMN_PARENT_ID);
         start = cursor.getString(COLUMN_VALID_START);
         last = cursor.getString(COLUMN_LAST_TAKEN);
         statuss = cursor.getString(COLUMN_STATUS);
@@ -138,7 +142,7 @@ public class AlertAdapter extends CursorAdapter{
 
         //details_dosage.setText("Take " + freq);
         status.setText(Utility.getStatus((statuss)));
-        instructions.setText("take " + instructions_text + getDoseText() + prescription + ".");
+        instructions.setText("take " + instructions_text +getDoseText() + prescription + ".");
         medication.setText(patientName);
         details_refill_progress.setProgress(Integer.parseInt(running_total));
     }

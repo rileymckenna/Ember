@@ -1,8 +1,10 @@
 package com.emyyn.riley.ember.dashboard;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +15,9 @@ import com.emyyn.riley.ember.R;
 import com.emyyn.riley.ember.Utility;
 
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by Riley on 5/6/2016.
@@ -46,8 +51,15 @@ public class PatientRelationsAdapter extends CursorAdapter {
     private int freq = 1;
     private String next_dose;
 
+    public static ArrayList<String> getChildrenList() {
+        return childrenList;
+    }
+
+    private static ArrayList<String> childrenList = new ArrayList<>();
+
 
     private void convertCursorRowToUXFormat(Cursor cursor) throws ParseException {
+
         //Log.i("Columns: " , Utility.queryColumns(Utility.getDashboardColumns()));
         patientName = cursor.getString(DashboardFragment.COLUMN_NAME_GIVEN);
         prescription = cursor.getString(DashboardFragment.COLUMN_PRODUCT);
@@ -101,6 +113,7 @@ public class PatientRelationsAdapter extends CursorAdapter {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+
         //Log.i("Adpater", patientName);
         TextView dashboard_name = (TextView) view.findViewById(R.id.alert_name);
         TextView details_status = (TextView) view.findViewById(R.id.alert_status);

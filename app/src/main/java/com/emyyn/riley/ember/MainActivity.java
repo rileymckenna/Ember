@@ -260,9 +260,9 @@ public class MainActivity extends AppCompatActivity
                 case 0:
                     return  DashboardFragment.newInstance(position);//MedicationFragment.newInstance(position);
                 case 1:
-                    return MedicationOrderFragment.newInstance(position);
+                    return PlaceholderFragment.newInstance(position);
                 case 2:
-                    return AlertActivity.newInstance(position);
+                    return PlaceholderFragment.newInstance(position);
                 default:
                     break;
             }

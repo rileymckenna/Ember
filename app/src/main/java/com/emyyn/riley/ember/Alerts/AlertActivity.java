@@ -1,7 +1,9 @@
 package com.emyyn.riley.ember.Alerts;
 
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.StrictMode;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -13,19 +15,22 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.emyyn.riley.ember.R;
 import com.emyyn.riley.ember.Utility;
 import com.emyyn.riley.ember.data.EmberContract;
+
+import java.util.ArrayList;
+import java.util.Set;
 
 public class AlertActivity extends AppCompatActivity {
 
@@ -85,14 +90,6 @@ public class AlertActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public static Fragment newInstance(int position) {
-        AlertFragment fragment = new AlertFragment();
-        Bundle args = new Bundle();
-        args.putInt("Args", position);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     /**
      * A placeholder fragment containing a simple view.
      */
@@ -105,8 +102,8 @@ public class AlertActivity extends AppCompatActivity {
         private AlertAdapter mAlertAdapter;
         private int ALERT_LOADER = 13;
         private String[] DASHBOARD_COLUMNS = Utility.getDashboardColumns();
-        static final String DETAIL_URI = "URI";
         private Uri mUri;
+        private String TAG = this.getClass().getSimpleName();
 
         public AlertFragment() {
         }
@@ -114,11 +111,13 @@ public class AlertActivity extends AppCompatActivity {
         /**
          * Returns a new instance of this fragment for the given section
          * number.
+         *
+         * @param sectionNumber
          */
-        public static AlertFragment newInstance(int sectionNumber) {
+        public static AlertFragment newInstance(String sectionNumber) {
             AlertFragment fragment = new AlertFragment();
             Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            args.putString(ARG_SECTION_NUMBER, sectionNumber);
             fragment.setArguments(args);
             return fragment;
         }
@@ -126,10 +125,6 @@ public class AlertActivity extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            Bundle arguments = getArguments();
-            if (arguments != null) {
-                mUri = arguments.getParcelable(AlertFragment.DETAIL_URI);
-            }
             mAlertAdapter = new AlertAdapter(getActivity(), null, 0);
             View rootView = inflater.inflate(R.layout.fragment_alert, container, false);
             ListView lv = (ListView) rootView.findViewById(R.id.alert_list);
@@ -137,7 +132,7 @@ public class AlertActivity extends AppCompatActivity {
             return rootView;
         }
 
-        void onLocationChanged( String s ) {
+        void onLocationChanged(String s) {
             // replace the uri, since the location has changed
             Uri uri = mUri;
             if (null != uri) {
@@ -156,11 +151,17 @@ public class AlertActivity extends AppCompatActivity {
 
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            String parentId = getActivity().getString(R.string.pref_patient_default);
-
-            Uri uri = EmberContract.RelationEntry.buildFamilyUri(parentId);
+            Uri uri = Uri.EMPTY;
+            if (args != null) {
+                String arg = String.valueOf(args.get(ARG_SECTION_NUMBER));
+                uri = EmberContract.MedicationOrderEntry.buildMedicationOrderWithPatientId(arg);
+            }else {
+                uri = getActivity().getIntent().getData();
+            }
+            Log.i(TAG, String.valueOf(uri));
+            //Uri uri = EmberContract.RelationEntry.buildFamilyUri(parentId);
             Loader<Cursor> lc = new CursorLoader(getActivity(),
-                    mUri,
+                    uri,
                     DASHBOARD_COLUMNS,
                     null,
                     null,
@@ -179,5 +180,90 @@ public class AlertActivity extends AppCompatActivity {
             mAlertAdapter.swapCursor(null);
         }
 
+    }
+
+    public static class PlaceholderFragment extends Fragment {
+        /**
+         * The fragment argument representing the section number for this
+         * fragment.
+         */
+        private static final String ARG_SECTION_NUMBER = "section_number";
+
+        public PlaceholderFragment() {
+        }
+
+        /**
+         * Returns a new instance of this fragment for the given section
+         * number.
+         */
+        public static PlaceholderFragment newInstance(int sectionNumber) {
+            PlaceholderFragment fragment = new PlaceholderFragment();
+            Bundle args = new Bundle();
+            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.fragment_dashboard, container, false);
+            TextView textView = (TextView) rootView.findViewById(R.id.tv_fragment_dashboard);
+            textView.setText(ARG_SECTION_NUMBER);
+            Log.i(this.getClass().getSimpleName(), this.getClass().getSimpleName() + " after text view assignment");
+            return rootView;
+        }
+    }
+
+    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+        ArrayList<String> children;
+        public SectionsPagerAdapter(FragmentManager fm) {
+            super(fm);
+            SharedPreferences settings = getSharedPreferences("ChildrenArray", 0);
+            Set<String> set = settings.getStringSet("Children", null);
+            children = new ArrayList<String>(set);
+           // Log.i("Children Pref Size", String.valueOf(children.size()));
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            // getItem is called to instantiate the fragment for the given page.
+            // Return a PlaceholderFragment (defined as a static inner class below).
+            Log.i("Children Id", String.valueOf(children.get(position)));
+            switch (position){
+                case 0: {
+                    return AlertActivity.AlertFragment.newInstance(children.get(position+1));
+                }
+                case 1: {
+                    return PlaceholderFragment.newInstance((position+1));
+                }
+                case 2: {
+                    return AlertActivity.AlertFragment.newInstance(children.get(position+1));
+                }
+                case 3: {
+                  return AlertActivity.AlertFragment.newInstance(children.get(position));
+                }
+                default:
+                    break;
+            }
+            return null;
+        }
+
+        @Override
+        public int getCount() {
+            // Show 3 total pages.
+            Log.i("Children Size", String.valueOf(children.size()));
+            return children.size();
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            for (int i = 0; i < getCount(); i++) {
+                if (position == i) {
+                    return children.get(i) + " " + i;
+                }
+            }
+            return null;
+        }
     }
 }
