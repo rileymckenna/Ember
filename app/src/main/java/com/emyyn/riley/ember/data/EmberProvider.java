@@ -157,7 +157,7 @@ public class EmberProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         Cursor c;
-        Log.i("MatcherId: ", String.valueOf(sUriMatcher.match(uri)));
+        //Log.i("MatcherId: ", String.valueOf(sUriMatcher.match(uri)));
         switch (sUriMatcher.match(uri)) {
 
             case PATIENT: {
@@ -172,7 +172,7 @@ public class EmberProvider extends ContentProvider {
             }
             case CHILDREN: {
                 String id = EmberContract.MedicationOrderEntry.getMedicationOrderId(uri);
-                Log.i("EmberProvider", "parent id");
+                //Log.i("EmberProvider", "parent id");
                 c = mOpenHelper.getReadableDatabase().rawQuery("SELECT child_id \n" +
                         "FROM patient\n" +
                         "INNER JOIN relation\n" +
@@ -202,7 +202,7 @@ public class EmberProvider extends ContentProvider {
             }
             case RELATIONS_PATIENT: {
                 String id = EmberContract.RelationEntry.getParentId(uri);
-                c = mOpenHelper.getReadableDatabase().rawQuery("SELECT " + Utility.queryColumns(Utility.getDashboardColumns()) + " FROM patient\n" +
+                c = mOpenHelper.getReadableDatabase().rawQuery("SELECT DISTINCT " + Utility.queryColumns(Utility.getDashboardColumns()) + " FROM patient\n" +
                         "INNER JOIN relation\n" +
                         "ON relation.child_id = patient.patient_id\n" +
                         "INNER JOIN medication_order\n" +
@@ -211,7 +211,7 @@ public class EmberProvider extends ContentProvider {
                         "ON medication_order.medication_id = medication._id\n" +
                         "INNER JOIN provider ON  provider._id = medication_order.prescriber_id \n" +
                         "WHERE relation.patient_id = ? " +
-                        "ORDER BY  medication_order.last_taken, medication_order.start_date;" , new String[]{id});
+                        "ORDER BY  medication_order.next_dose;" , new String[]{id});
                 break;
             }
             case MEDICATION_ORDERS: {
@@ -367,6 +367,11 @@ public class EmberProvider extends ContentProvider {
                 break;
             }
             case MEDICATION_ORDER: {
+                rowsUpdated = db.update(MedicationOrderEntry.TABLE_NAME, values, selection, selectionArgs);
+                break;
+            }
+            case MEDICATION_ORDER_PATIENT:
+            {
                 rowsUpdated = db.update(MedicationOrderEntry.TABLE_NAME, values, selection, selectionArgs);
                 break;
             }

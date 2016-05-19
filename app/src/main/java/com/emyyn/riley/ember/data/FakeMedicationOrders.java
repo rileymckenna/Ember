@@ -55,15 +55,15 @@ public class FakeMedicationOrders {
     public FakeMedicationOrders(Context activity) throws JSONException, ParseException {
         mContext = activity;
 
-        // setMedicationOrderData();
+         setMedicationOrderData();
         //Log.i("", "SetMedicationOrderData");
-        //  setMedicationData();
+          setMedicationData();
         //Log.i("", "SetMedicationData");
-        //  setProviderData();
+          setProviderData();
         //Log.i("", "SetProviderData");
-        // setPatientData();
+         setPatientData();
         //Log.i("", "SetPatientData");
-         // setRelationData();
+          setRelationData();
 
     }
 
@@ -142,7 +142,7 @@ public class FakeMedicationOrders {
             medicationOrderValues.put(COLUMN_DOSAGE_INSTRUCTIONS_ROUTE, "Oral");
             medicationOrderValues.put(COLUMN_DOSAGE_INSTRUCTIONS_METHOD, method);
             medicationOrderValues.put(COLUMN_DOSAGE_INSTRUCTIONS_TIMING_FREQUENCY, timing_frequency);
-            medicationOrderValues.put(COLUMN_DOSAGE_INSTRUCTIONS_TIMING_PERIOD, timing_frequency);
+            medicationOrderValues.put(COLUMN_DOSAGE_INSTRUCTIONS_TIMING_PERIOD, timing_period );
             medicationOrderValues.put(COLUMN_DOSAGE_INSTRUCTIONS_TIMING_PERIOD_UNITS, "hrs");
             medicationOrderValues.put(COLUMN_DOSAGE_INSTRUCTIONS_TIMING_START, valid_start);
             medicationOrderValues.put(COLUMN_DOSAGE_INSTRUCTIONS_TIMING_END, valid_end);

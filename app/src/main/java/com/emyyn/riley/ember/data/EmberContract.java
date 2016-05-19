@@ -93,6 +93,7 @@ public class EmberContract {
         public static final String COLUMN_STATUS = "status" ;
         public static final String COLUMN_LAST_TAKEN = "last_taken" ;
         public static final String COLUMN_RUNNING_TOTAL = "running_total";
+        public static final String COLUMN_NEXT_DOSE = "next_dose";
 
         public static Uri buildMedicationOrderUri(String id) {
             return CONTENT_URI.buildUpon().appendPath(id).build();

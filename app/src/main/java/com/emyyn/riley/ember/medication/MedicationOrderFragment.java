@@ -65,7 +65,7 @@ public class MedicationOrderFragment extends Fragment implements LoaderManager.L
 
     private void updateMedicationOrders() throws JSONException, ParseException {
         //FetchMedicationOrders medicationOrders = new FetchMedicationOrders(getActivity());
-        FakeMedicationOrders orders = new FakeMedicationOrders(getActivity());
+        //FakeMedicationOrders orders = new FakeMedicationOrders(getActivity());
         //String patientId = Utility.getPerferredPatient(getActivity());
         //medicationOrders.execute(patientId);
     }

@@ -1,10 +1,8 @@
 package com.emyyn.riley.ember.dashboard;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,8 +14,6 @@ import com.emyyn.riley.ember.Utility;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Created by Riley on 5/6/2016.
@@ -42,6 +38,7 @@ public class PatientRelationsAdapter extends CursorAdapter {
     private String timing_period;
     private String method;
     private String timing_frequency;
+    private String period_unit;
     private String child_id;
     private String parent_id;
     private String start;
@@ -64,13 +61,13 @@ public class PatientRelationsAdapter extends CursorAdapter {
         patientName = cursor.getString(DashboardFragment.COLUMN_NAME_GIVEN);
         prescription = cursor.getString(DashboardFragment.COLUMN_PRODUCT);
         instructions_text = cursor.getString(DashboardFragment.COLUMN_DOSAGE_INSTRUCTIONS_TEXT);
-        child_id = cursor.getString(DashboardFragment.COLUMN_CHILD_ID);
-        parent_id = cursor.getString(DashboardFragment.COLUMN_PARENT_ID);
         start = cursor.getString(DashboardFragment.COLUMN_VALID_START);
         last = cursor.getString(DashboardFragment.COLUMN_LAST_TAKEN);
         status = cursor.getString(DashboardFragment.COLUMN_STATUS);
         running_total = cursor.getString(DashboardFragment.COLUMN_RUNNING_TOTAL);
-        ds_value = cursor.getString(DashboardFragment.COLUMN_DISPENSE_SUPPLY_VALUE);
+        ds_value = cursor.getString(DashboardFragment.COLUMN_DISPENSE_QUANTITY);
+        timing_period = cursor.getString(DashboardFragment.COLUMN_DOSAGE_INSTRUCTIONS_TIMING_PERIOD);
+        period_unit = cursor.getString(DashboardFragment.COLUMN_DOSAGE_INSTRUCTIONS_TIMING_PERIOD_UNITS);
 
         instructions_text = instructions_text.substring(5, 6);
         // Log.i("instructions text: " , String.valueOf(Integer.decode(instructions_text)));
@@ -85,13 +82,13 @@ public class PatientRelationsAdapter extends CursorAdapter {
                 if (s > 0) {
                     next_dose = String.valueOf(s);
                 } else if (s < 0)
-                    next_dose = "Past Due " + Math.abs(s) + " hours";
+                    next_dose = "Past Due " + Math.abs(s);
                 else {
                     int i = Utility.getNextDoseMin(start);
                     next_dose = String.valueOf(i) + " minutes";
                 }
             } else {
-                int s = Math.abs(Integer.parseInt(Utility.getNextDose(last)));
+                int s = Math.abs(Integer.parseInt(Utility.getNextDoseDate(last, Integer.parseInt(timing_period))));
                 next_dose = String.valueOf(s);
             }
         } catch (Exception e) {

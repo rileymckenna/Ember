@@ -20,8 +20,12 @@ import com.emyyn.riley.ember.Alerts.AlertActivity;
 import com.emyyn.riley.ember.R;
 import com.emyyn.riley.ember.Utility;
 import com.emyyn.riley.ember.data.EmberContract;
+import com.emyyn.riley.ember.data.FakeMedicationOrders;
 import com.emyyn.riley.ember.medication.MedicationDetails;
 
+import org.json.JSONException;
+
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -38,7 +42,7 @@ public class DashboardFragment extends Fragment implements LoaderManager.LoaderC
     static final int COLUMN_PATIENT_KEY = 2;
     static final int COLUMN_DISPENSE_SUPPLY_VALUE = 3;
     static final int COLUMN_DISPENSE_SUPPLY_UNIT = 4;
-    static final int COLUMN_DISPENSE_QUANTITY = 5;
+
     static final int COLUMN_VALID_START = 5;
     static final int COLUMN_VALID_END = 6;
     static final int COLUMN_LAST_UPDATED_AT = 7;
@@ -54,8 +58,12 @@ public class DashboardFragment extends Fragment implements LoaderManager.LoaderC
     static final int COLUMN_DOSAGE_INSTRUCTIONS_FREQUENCY = 17;
     static final int COLUMN_PROVIDER_NAME = 18;
     static final int COLUMN_REASON = 19;
-    static final int COLUMN_CHILD_ID = 24;
-    static final int COLUMN_PARENT_ID = 25;
+    static final int COLUMN_DISPENSE_QUANTITY = 20;
+    static final int COLUMN_DOSAGE_INSTRUCTIONS_TIMING_PERIOD = 21;
+    static final int COLUMN_DOSAGE_INSTRUCTIONS_TIMING_PERIOD_UNITS = 22;
+    static final int COLUMN_NEXT_DOSE = 23;
+    static final int COLUMN_CHILD_ID = 28;
+    static final int COLUMN_PARENT_ID = 29;
 
 
     private PatientRelationsAdapter adpater;
@@ -110,6 +118,14 @@ public class DashboardFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         getLoaderManager().initLoader(DASHBOARD_LOADER, null, this);
+        //Creates database
+//        try {
+//            FakeMedicationOrders orders = new FakeMedicationOrders(getActivity());
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -128,18 +144,15 @@ public class DashboardFragment extends Fragment implements LoaderManager.LoaderC
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        Log.i("CursorCount", String.valueOf(cursor.getCount()));
         childrenList.clear();
         if (cursor != null) {
             while (cursor.moveToNext()) {
                 String val = cursor.getString(DashboardFragment.COLUMN_CHILD_ID);
                 if (!childrenList.contains(val)) {
                     childrenList.add(val);
-                    Log.i("CursorChild", val);
                 }
             }
         }
-        Log.i("ListSize", String.valueOf(childrenList.size()));
         if (!childrenList.isEmpty()) {
             SharedPreferences settings = getContext().getSharedPreferences("ChildrenArray", 0);
             SharedPreferences.Editor editor = settings.edit();

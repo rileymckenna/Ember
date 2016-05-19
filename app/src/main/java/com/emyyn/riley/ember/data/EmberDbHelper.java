@@ -13,7 +13,7 @@ import static com.emyyn.riley.ember.data.EmberContract.PatientEntry;
  * Created by Riley on 4/30/2016.
  */
 public class EmberDbHelper extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 19;
+    private static final int DATABASE_VERSION = 21;
     static final String DATABASE_NAME = "ember.db";
 
     private static final String TEXT = " TEXT, ";
@@ -109,6 +109,7 @@ public class EmberDbHelper extends SQLiteOpenHelper {
                 MedicationOrderEntry.COLUMN_STATUS + TEXT +
                 MedicationOrderEntry.COLUMN_LAST_TAKEN + TEXT +
                 MedicationOrderEntry.COLUMN_RUNNING_TOTAL + TEXT +
+                MedicationOrderEntry.COLUMN_NEXT_DOSE + TEXT +
 
                 " FOREIGN KEY (" + MedicationOrderEntry.COLUMN_MED_KEY + ") REFERENCES " +
                 MedicationEntry.TABLE_NAME + " (" + MedicationEntry._ID + "), " +

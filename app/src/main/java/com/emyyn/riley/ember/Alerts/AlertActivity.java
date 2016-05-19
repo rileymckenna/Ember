@@ -1,9 +1,10 @@
 package com.emyyn.riley.ember.Alerts;
 
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.StrictMode;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -24,13 +25,17 @@ import android.view.ViewGroup;
 
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.emyyn.riley.ember.R;
 import com.emyyn.riley.ember.Utility;
 import com.emyyn.riley.ember.data.EmberContract;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Set;
+
+import static com.emyyn.riley.ember.data.EmberContract.PATH_MEDICATIONORDER;
 
 public class AlertActivity extends AppCompatActivity {
 
@@ -56,10 +61,13 @@ public class AlertActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        toolbar.setTitle(R.string.title_activity_alert);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        String id = EmberContract.MedicationOrderEntry.getPatientId(getIntent().getData());
+        Log.i("AlertActivity", id);
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), id);
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
@@ -100,10 +108,13 @@ public class AlertActivity extends AppCompatActivity {
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
         private AlertAdapter mAlertAdapter;
-        private int ALERT_LOADER = 13;
-        private String[] DASHBOARD_COLUMNS = Utility.getDashboardColumns();
-        private Uri mUri;
-        private String TAG = this.getClass().getSimpleName();
+        private static int ALERT_LOADER = 13;
+        private static String[] DASHBOARD_COLUMNS = Utility.getDashboardColumns();
+        private static Uri mUri;
+        private static String TAG = "AlertFragment";
+        private View collapsable;
+        private static Context mContext;
+        private static AlertFragment mAlertFragment;
 
         public AlertFragment() {
         }
@@ -125,22 +136,123 @@ public class AlertActivity extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
+            mContext = getContext();
             mAlertAdapter = new AlertAdapter(getActivity(), null, 0);
             View rootView = inflater.inflate(R.layout.fragment_alert, container, false);
             ListView lv = (ListView) rootView.findViewById(R.id.alert_list);
             lv.setAdapter(mAlertAdapter);
+            mAlertFragment = this;
             return rootView;
         }
 
-        void onLocationChanged(String s) {
+
+        public static void onTimingChanged(AlertFragment t, String s, int total, int pills, int period, String status) throws ParseException {
             // replace the uri, since the location has changed
             Uri uri = mUri;
+            Cursor c;
+            String mSelectionClause = EmberContract.MedicationOrderEntry.COLUMN_MEDICATION_ORDER_ID + " = ?";
+            String[] mSelectionArgs = new String[]{s};
             if (null != uri) {
-                String id = EmberContract.MedicationOrderEntry.getPatientId(uri);
-                Uri updatedUri = EmberContract.MedicationOrderEntry.buildMedicationOrderUri(s);
-                mUri = updatedUri;
-                getLoaderManager().restartLoader(ALERT_LOADER, null, this);
+                if (status == AlertAdapter.SNOOZE) {
+                    Uri u = EmberContract.BASE_CONTENT_URI;
+                    u.buildUpon().appendPath(PATH_MEDICATIONORDER).appendPath(s).build();
+                    Log.i(TAG, AlertAdapter.SNOOZE);
+                    ContentValues values = new ContentValues();
+                    String timeNow = Utility.getTimeNow();
+                    String next_dose = Utility.getSnoozeThisDose(timeNow, period);
+                    Log.i(TAG, next_dose);
+                    values.put(EmberContract.MedicationOrderEntry.COLUMN_LAST_UPDATED_AT, timeNow);
+                    values.put(EmberContract.MedicationOrderEntry.COLUMN_LAST_TAKEN, timeNow);
+                    values.put(EmberContract.MedicationOrderEntry.COLUMN_NEXT_DOSE, next_dose);
+                    final int update = mContext.getContentResolver().update(uri, values, mSelectionClause, mSelectionArgs);
+                } else if (status == AlertAdapter.SKIP) {
+                    Uri u = EmberContract.BASE_CONTENT_URI;
+                    u.buildUpon().appendPath(PATH_MEDICATIONORDER).appendPath(s).build();
+                    ContentValues values = new ContentValues();
+                    String timeNow = Utility.getTimeNow();
+                    Log.i(TAG, AlertAdapter.SKIP);
+                    String next_dose = Utility.getNextDoseDate(timeNow, period);
+                    Log.i(TAG, next_dose);
+                    values.put(EmberContract.MedicationOrderEntry.COLUMN_LAST_UPDATED_AT, timeNow);
+                    values.put(EmberContract.MedicationOrderEntry.COLUMN_LAST_TAKEN, timeNow);
+                    values.put(EmberContract.MedicationOrderEntry.COLUMN_NEXT_DOSE, next_dose);
+                    final int update = mContext.getContentResolver().update(uri, values, mSelectionClause, mSelectionArgs);
+                } else if (status == AlertAdapter.TAKE) {
+                    Uri u = EmberContract.BASE_CONTENT_URI;
+                    u.buildUpon().appendPath(PATH_MEDICATIONORDER).appendPath(s).build();
+                    Log.i(TAG, u.toString());
+                    ContentValues values = new ContentValues();
+                    String running_total = String.valueOf(total - pills);
+                    String timeNow = Utility.getTimeNow();
+                    String next_dose = Utility.getNextDoseDate(timeNow, period);
+                    Log.i(TAG, next_dose);
+                    values.put(EmberContract.MedicationOrderEntry.COLUMN_RUNNING_TOTAL, running_total);
+                    values.put(EmberContract.MedicationOrderEntry.COLUMN_LAST_UPDATED_AT, timeNow);
+                    values.put(EmberContract.MedicationOrderEntry.COLUMN_LAST_TAKEN, timeNow);
+                    values.put(EmberContract.MedicationOrderEntry.COLUMN_NEXT_DOSE, next_dose);
+                    final int update = mContext.getContentResolver().update(uri, values, mSelectionClause, mSelectionArgs);
+                }
             }
+            String id = EmberContract.MedicationOrderEntry.getPatientId(uri);
+            Uri updatedUri = EmberContract.MedicationOrderEntry.buildMedicationOrderUri(s);
+            mUri = updatedUri;
+
+            t.getLoaderManager().restartLoader(ALERT_LOADER, null, t);
+        }
+
+
+        static void snoozeMedication(View v) throws ParseException {
+            View parent = (View) v.getParent();
+            TextView id, running_total, pills, last_taken, last_updated, next_dose;
+            id = (TextView) parent.findViewById(R.id.alert_medication_id);
+            running_total = (TextView) parent.findViewById(R.id.alert_total);
+            pills = (TextView) parent.findViewById(R.id.alert_pills);
+            next_dose = (TextView) parent.findViewById(R.id.time_text);
+            String total, pill, s, next;
+            total = (String) running_total.getText();
+            pill = (String) pills.getText();
+            next = (String) next_dose.getText();
+
+            s = (String) id.getText();
+            Toast.makeText(mContext, s + " Snoozed",
+                    Toast.LENGTH_SHORT).show();
+            onTimingChanged(mAlertFragment, s, Integer.parseInt(total), Integer.parseInt(pill), Integer.parseInt(next), AlertAdapter.SNOOZE);
+        }
+
+        static void takeMedication(View v) throws ParseException {
+            View parent = (View) v.getParent();
+            TextView id, running_total, pills, last_taken, last_updated, next_dose;
+            id = (TextView) parent.findViewById(R.id.alert_medication_id);
+            running_total = (TextView) parent.findViewById(R.id.alert_total);
+            pills = (TextView) parent.findViewById(R.id.alert_pills);
+            next_dose = (TextView) parent.findViewById(R.id.time_text);
+            String total, pill, s, next;
+            total = (String) running_total.getText();
+            pill = (String) pills.getText();
+            next = (String) next_dose.getText();
+
+            s = (String) id.getText();
+            Toast.makeText(mContext, s + " Taken",
+                    Toast.LENGTH_SHORT).show();
+            onTimingChanged(mAlertFragment, s, Integer.parseInt(total), Integer.parseInt(pill), Integer.parseInt(next), AlertAdapter.TAKE);
+        }
+
+        static void skipMedication(View v) throws ParseException {
+            View parent = (View) v.getParent();
+            TextView id, running_total, pills, last_taken, last_updated, next_dose;
+            id = (TextView) parent.findViewById(R.id.alert_medication_id);
+            running_total = (TextView) parent.findViewById(R.id.alert_total);
+            pills = (TextView) parent.findViewById(R.id.alert_pills);
+            next_dose = (TextView) parent.findViewById(R.id.time_text);
+            String total, pill, s, next;
+            total = (String) running_total.getText();
+            pill = (String) pills.getText();
+            next = (String) next_dose.getText();
+
+            s = (String) id.getText();
+            Toast.makeText(mContext, s + " Skipped",
+                    Toast.LENGTH_SHORT).show();
+            onTimingChanged(mAlertFragment, s, Integer.parseInt(total), Integer.parseInt(pill), Integer.parseInt(next), AlertAdapter.SKIP);
         }
 
         @Override
@@ -151,17 +263,17 @@ public class AlertActivity extends AppCompatActivity {
 
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            Uri uri = Uri.EMPTY;
-            if (args != null) {
-                String arg = String.valueOf(args.get(ARG_SECTION_NUMBER));
-                uri = EmberContract.MedicationOrderEntry.buildMedicationOrderWithPatientId(arg);
-            }else {
-                uri = getActivity().getIntent().getData();
+
+            if (this.getArguments() != null) {
+                String arg = String.valueOf(this.getArguments().get(ARG_SECTION_NUMBER));
+                mUri = EmberContract.MedicationOrderEntry.buildMedicationOrderWithPatientId(arg);
+            } else {
+                mUri = getActivity().getIntent().getData();
             }
-            Log.i(TAG, String.valueOf(uri));
+            Log.i(TAG, String.valueOf(mUri));
             //Uri uri = EmberContract.RelationEntry.buildFamilyUri(parentId);
             Loader<Cursor> lc = new CursorLoader(getActivity(),
-                    uri,
+                    mUri,
                     DASHBOARD_COLUMNS,
                     null,
                     null,
@@ -182,66 +294,50 @@ public class AlertActivity extends AppCompatActivity {
 
     }
 
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        public PlaceholderFragment() {
-        }
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_dashboard, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.tv_fragment_dashboard);
-            textView.setText(ARG_SECTION_NUMBER);
-            Log.i(this.getClass().getSimpleName(), this.getClass().getSimpleName() + " after text view assignment");
-            return rootView;
-        }
-    }
-
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
         ArrayList<String> children;
-        public SectionsPagerAdapter(FragmentManager fm) {
+        String firstChild;
+
+        public SectionsPagerAdapter(FragmentManager fm, String childid) {
             super(fm);
             SharedPreferences settings = getSharedPreferences("ChildrenArray", 0);
             Set<String> set = settings.getStringSet("Children", null);
             children = new ArrayList<String>(set);
-           // Log.i("Children Pref Size", String.valueOf(children.size()));
+            int fc = children.indexOf(childid);
+            firstChild = children.get(fc);
+            ArrayList<String> stringArray = new ArrayList<>();
+            stringArray.add(firstChild);
+            for (int i = 0; i < children.size(); i++) {
+                if (children.get(i) != firstChild) {
+                    stringArray.add(children.get(i));
+                }
+            }
+            children = stringArray;
+
+            // Log.i("Children Pref Size", String.valueOf(children.size()));
         }
 
         @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            Log.i("Children Id", String.valueOf(children.get(position)));
-            switch (position){
+            //Log.i("Children Id", String.valueOf(children.get(position)));
+            switch (position) {
                 case 0: {
-                    return AlertActivity.AlertFragment.newInstance(children.get(position+1));
+                    // Log.i("Children Id", String.valueOf(children.get(position)));
+                    return AlertActivity.AlertFragment.newInstance(children.get(position));
                 }
                 case 1: {
-                    return PlaceholderFragment.newInstance((position+1));
+                    // Log.i("Children Id", String.valueOf(children.get(position)));
+                    return AlertActivity.AlertFragment.newInstance(children.get(position));
                 }
                 case 2: {
-                    return AlertActivity.AlertFragment.newInstance(children.get(position+1));
+                    //  Log.i("Children Id", String.valueOf(children.get(position)));
+                    return AlertActivity.AlertFragment.newInstance(children.get(position));
                 }
                 case 3: {
-                  return AlertActivity.AlertFragment.newInstance(children.get(position));
+                    //  Log.i("Children Id", String.valueOf(children.get(position)));
+                    return AlertActivity.AlertFragment.newInstance(children.get(position));
                 }
                 default:
                     break;
@@ -252,18 +348,23 @@ public class AlertActivity extends AppCompatActivity {
         @Override
         public int getCount() {
             // Show 3 total pages.
-            Log.i("Children Size", String.valueOf(children.size()));
             return children.size();
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            for (int i = 0; i < getCount(); i++) {
-                if (position == i) {
-                    return children.get(i) + " " + i;
-                }
+            switch (position) {
+                case 0:
+                    return children.get(position);
+                case 1:
+                    return children.get(position);
+                case 2:
+                    return children.get(position);
+                case 3:
+                    return children.get(position);
+                default:
+                    return "Alert Manager";
             }
-            return null;
         }
     }
 }
