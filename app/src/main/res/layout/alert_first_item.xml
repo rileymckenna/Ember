@@ -206,7 +206,14 @@
             android:layout_alignBaseline="@+id/time_text"
             android:layout_alignBottom="@+id/time_text"
             android:layout_toEndOf="@+id/time_text" />
-
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="4"
+            android:id="@+id/alert_frequency"
+            android:layout_alignTop="@+id/imageView2"
+            android:layout_toStartOf="@+id/imageView2" />
         <TextView
             android:id="@+id/alert_status"
             android:layout_width="wrap_content"

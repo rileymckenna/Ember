@@ -261,10 +261,15 @@ public class EmberContract {
         public static Uri buildFamilyUri(String parent) {
             return CONTENT_URI.buildUpon().appendPath("patient").appendPath(parent).build();
         }
+        public static Uri buildFamilyMedicationUri(String parentId) {
+            return CONTENT_URI.buildUpon().appendPath("patients").appendPath(parentId).build();
+        }
 
         public static String getParentId(Uri uri) {
             Log.i("GetPatientId", uri.getPathSegments().get(2).toString());
             return uri.getPathSegments().get(2);
         }
+
+
     }
 }

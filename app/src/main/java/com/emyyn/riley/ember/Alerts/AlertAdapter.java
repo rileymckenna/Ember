@@ -1,12 +1,17 @@
 package com.emyyn.riley.ember.Alerts;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -14,9 +19,10 @@ import android.widget.Toast;
 
 import com.emyyn.riley.ember.R;
 import com.emyyn.riley.ember.Utility;
+import com.emyyn.riley.ember.data.EmberContract;
+import com.emyyn.riley.ember.medication.MedicationDetails;
 
 import java.text.ParseException;
-import java.util.Date;
 
 import static com.emyyn.riley.ember.Alerts.AlertActivity.AlertFragment.*;
 
@@ -64,6 +70,7 @@ public class AlertAdapter extends CursorAdapter implements Animation.AnimationLi
     final static int COLUMN_PRODUCT = 28;
     final static int COLUMN_NAME_GIVEN = 29;
     final static int COLUMN_NAME_FAMILY = 30;
+    final static int COLUMN_NEXT_DOSE = 31;
 
     public final static String SNOOZE = "snooze";
     public final static String SKIP = "skip";
@@ -88,11 +95,13 @@ public class AlertAdapter extends CursorAdapter implements Animation.AnimationLi
     private String last;
     private String ds_value;   //total number of pills dispensed
     private String statuss;
-    private int freq = 1;
+    private String freq;
     private String next_dose;
     private View collapsable;
     private String pills;
     private String medication_order_id;
+
+    private boolean isNearTime = false;
 
     Animation animSlideUp, animSlideDown;
 
@@ -101,7 +110,7 @@ public class AlertAdapter extends CursorAdapter implements Animation.AnimationLi
         //Log.i("Columns: " , Utility.queryColumns(Utility.getDashboardColumns()));
         patientName = cursor.getString(COLUMN_NAME_GIVEN);
         prescription = cursor.getString(COLUMN_PRODUCT);
-        period = cursor.getString(COLUMN_DI_PERIOD);
+        freq = cursor.getString(COLUMN_DI_PERIOD);
         instructions_text = cursor.getString(COLUMN_DOSAGE_INSTRUCTIONS_TEXT);
         start = cursor.getString(COLUMN_VALID_START);
         last = cursor.getString(COLUMN_LAST_TAKEN);
@@ -113,24 +122,29 @@ public class AlertAdapter extends CursorAdapter implements Animation.AnimationLi
         pills = instructions_text.substring(5, 6);
         medication_order_id = cursor.getString(COLUMN_MEDICATION_ORDER_ID);
         max_quantity = cursor.getString(COLUMN_DISPENSE_QUANTITY);
+        next_dose = cursor.getString(COLUMN_NEXT_DOSE);
 
         try {
-            if (last == null) {
-                int s = (Integer.parseInt(Utility.getNextDose(start)));
+            if (last == null && next_dose == null) {
+                int s = (Integer.parseInt(Utility.getNextAdministration(start)));
                 if (s > 0) {
                     next_dose = String.valueOf(s);
                 } else if (s < 0)
-                    next_dose = Math.abs(s)+"";
+                    next_dose = "Past Due " + Math.abs(s);
                 else {
                     int i = Utility.getNextDoseMin(start);
                     next_dose = String.valueOf(i) + " minutes";
                 }
-            } else {
-                Date s = (Utility.formatDate2(Utility.getNextDoseDate(last, Integer.parseInt(period))));
-                next_dose = Utility.getNextDose2(String.valueOf(s));
+            } else if (next_dose == null ){
+                next_dose = String.valueOf(Utility.getNextAdministration(last));
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        Log.i("NextAdministration", String.valueOf(Integer.parseInt(Utility.getNextAdministration(next_dose))));
+        if (1 > Integer.parseInt(Utility.getNextAdministration(next_dose))){
+            Log.i("NextAdministration", String.valueOf(Integer.parseInt(Utility.getNextAdministration(next_dose))));
+            isNearTime = true;
         }
     }
 
@@ -223,7 +237,7 @@ public class AlertAdapter extends CursorAdapter implements Animation.AnimationLi
 
 
         //Log.i("Adpater", patientName);
-        TextView medication, status, instructions, id, timing, skip, snooze, take, total, pill;
+        TextView medication, status, instructions, id, timing, skip, snooze, take, total, pill, period;
         total = (TextView) view.findViewById(R.id.alert_total);
         medication = (TextView) view.findViewById(R.id.alert_name);
         status = (TextView) view.findViewById(R.id.alert_status);
@@ -231,14 +245,36 @@ public class AlertAdapter extends CursorAdapter implements Animation.AnimationLi
         timing = (TextView) view.findViewById(R.id.time_text);
         pill = (TextView) view.findViewById(R.id.alert_pills);
         id = (TextView) view.findViewById(R.id.alert_medication_id);
+        period = (TextView) view.findViewById(R.id.alert_frequency);
+        period.setText(freq);
         id.setText(medication_order_id);
         total.setText(running_total);
         pill.setText(pills);
+
+        //OnLongClickCardlistener
+        CardView cardView = (CardView) view.findViewById(R.id.card_view);
+        cardView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                    Intent intent = new Intent(mContext, MedicationDetails.class).setData(EmberContract.MedicationOrderEntry.buildMedicationOrderUri(medication_order_id));
+                    mContext.startActivity(intent);
+                return true;
+            }
+        });
 
         //Onlclick Listeners for the skip snooze and take
         skip = (TextView) view.findViewById(R.id.alert_skip);
         snooze = (TextView) view.findViewById(R.id.alert_snooze);
         take = (TextView) view.findViewById(R.id.alert_take);
+        if (isNearTime){
+            skip.setVisibility(View.VISIBLE);
+            snooze.setVisibility(View.VISIBLE);
+            take.setVisibility(View.VISIBLE);
+        }else {
+            skip.setVisibility(View.INVISIBLE);
+            snooze.setVisibility(View.INVISIBLE);
+            take.setVisibility(View.INVISIBLE);
+        }
 
         skip.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -248,6 +284,7 @@ public class AlertAdapter extends CursorAdapter implements Animation.AnimationLi
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
+
 
             }
         });
@@ -273,6 +310,9 @@ public class AlertAdapter extends CursorAdapter implements Animation.AnimationLi
                 }
             }
         });
+
+
+
 
         ProgressBar details_refill_progress = (ProgressBar) view.findViewById(R.id.alerts_progress);
         details_refill_progress.setMax(Integer.parseInt(max_quantity));

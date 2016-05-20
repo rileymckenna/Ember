@@ -26,9 +26,9 @@ import ca.uhn.fhir.model.primitive.DateTimeDt;
  */
 public class Utility {
 
-    public static String getNextDose(String start) {
+    public static String getNextAdministration(String start) {
         Calendar c = Calendar.getInstance();
-        String next_dose = "none";
+        String next_dose = "0";
         Date d1 = null;
         Date d2 = null;
         try {
@@ -36,7 +36,7 @@ public class Utility {
             d2 = c.getTime();
             DateTime dt1 = new DateTime(d1);
             DateTime dt2 = new DateTime(d2);
-            next_dose = Hours.hoursBetween(dt2, dt1).getHours() + "";
+            next_dose = String.valueOf(Hours.hoursBetween(dt2, dt1).getHours());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -46,7 +46,7 @@ public class Utility {
     public static String getTimeNow() throws ParseException {
         Calendar c = Calendar.getInstance();
         Date d = c.getTime();
-        return String.valueOf(d);
+        return String.valueOf(format.format(d));
     }
 
     public static SimpleDateFormat getFormat() {
@@ -156,7 +156,8 @@ public class Utility {
             EmberContract.MedicationOrderEntry.COLUMN_RUNNING_TOTAL,
             EmberContract.MedicationEntry.TABLE_NAME + "." + EmberContract.MedicationEntry.COLUMN_PRODUCT,
             EmberContract.PatientEntry.TABLE_NAME + "." + EmberContract.PatientEntry.COLUMN_NAME_GIVEN,
-            EmberContract.PatientEntry.TABLE_NAME + "." + EmberContract.PatientEntry.COLUMN_NAME_FAMILY
+            EmberContract.PatientEntry.TABLE_NAME + "." + EmberContract.PatientEntry.COLUMN_NAME_FAMILY,
+            EmberContract.MedicationOrderEntry.COLUMN_NEXT_DOSE
 
     };
 
@@ -202,41 +203,21 @@ public class Utility {
         }
     }
 
-    public static String getNextDose2(String start) {
-        Calendar c = Calendar.getInstance();
-        String next_dose = "none";
-        Date d1 = null;
-        Date d2 = null;
-        try {
-            d1 = formatDate2(start);
-            d2 = c.getTime();
-            DateTime dt1 = new DateTime(d1);
-            DateTime dt2 = new DateTime(d2);
-            next_dose = Hours.hoursBetween(dt1, dt2).getHours() + "";
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return next_dose;
-    }
-
     public static String getNextDoseDate(String last, int period) {
         Calendar c = Calendar.getInstance();
-        Date d1 = null;
-        Date d2 = null;
+        Date d1;
+        Date d2;
+        String s = "";
         try {
-            d1 = formatDate2(last);
+            d1 = formatDate(last);
             c.setTime(d1);
             c.add(Calendar.HOUR, period);
             d2 = c.getTime();
+            s  = format.format(d2);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return String.valueOf(d2);
-    }
-
-    public static Date formatDate2(String d) throws ParseException {
-        Date dt = format2.parse(d);
-        return dt;
+        return s;
     }
 
     public static String getSnoozeThisDose(String timeNow, int period) {
@@ -245,13 +226,18 @@ public class Utility {
         Date d1 = null;
         Date d2 = null;
         try {
-            d1 = formatDate2(timeNow);
+            d1 = formatDate(timeNow);
             c.setTime(d1);
             c.add(Calendar.MINUTE, period);
             d2 = c.getTime();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return String.valueOf(d2);
+        return String.valueOf(format.format(d2));
+    }
+
+    public static Long dateToLong(Date date) {
+            long longDate=date.getTime();
+        return longDate;
     }
 }

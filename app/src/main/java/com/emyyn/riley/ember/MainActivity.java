@@ -43,9 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private SectionsPagerAdapter mSectionsPagerAdapter = null;
     private TabLayout tabLayout;
     private final String TAG = this.getClass().getSimpleName();
-    private NotificationManager notificationManager;
-    private boolean isNotificationActive;
-    private int notifID = 34;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        Notifications.notify(this, "Thest", 5);
+
 
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
@@ -61,34 +59,6 @@ public class MainActivity extends AppCompatActivity {
         ViewPager mViewPager = (ViewPager) findViewById(R.id.vp_container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
     }
-
-    public void showNotification(View view) {
-        NotificationCompat.Builder notificationBuilder = new
-        NotificationCompat.Builder(this)
-                .setContentTitle("")
-                .setContentText("")
-                .setTicker("")
-                .setSmallIcon(R.drawable.pharmacy);
-
-        //Intent intent = new Intent(this, MoreInformationNotification.class);
-        TaskStackBuilder taskStackBuilder = TaskStackBuilder.create(this);
-        //taskStackBuilder.addParentStack(MoreInformationNotification.class);
-        //taskStackBuilder.addNextIntent(intent);
-        PendingIntent pendingIntent = taskStackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        notificationBuilder.setContentIntent(pendingIntent);
-        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-    notificationManager.notify( notifID, notificationBuilder.build());
-
-        isNotificationActive = true;
-    }
-
-    public void stopNotification(View view) {
-        if(isNotificationActive){
-            notificationManager.cancel(notifID);
-        }
-    }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -107,6 +77,8 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
             return true;
         }
 

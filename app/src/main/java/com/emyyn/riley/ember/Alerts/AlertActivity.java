@@ -2,13 +2,16 @@ package com.emyyn.riley.ember.Alerts;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 
 import android.support.v4.app.Fragment;
@@ -23,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,6 +34,7 @@ import android.widget.Toast;
 import com.emyyn.riley.ember.R;
 import com.emyyn.riley.ember.Utility;
 import com.emyyn.riley.ember.data.EmberContract;
+import com.emyyn.riley.ember.medication.MedicationDetails;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -66,7 +71,6 @@ public class AlertActivity extends AppCompatActivity {
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         String id = EmberContract.MedicationOrderEntry.getPatientId(getIntent().getData());
-        Log.i("AlertActivity", id);
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), id);
 
         // Set up the ViewPager with the sections adapter.
@@ -146,58 +150,48 @@ public class AlertActivity extends AppCompatActivity {
         }
 
 
-        public static void onTimingChanged(AlertFragment t, String s, int total, int pills, int period, String status) throws ParseException {
+        public static void onTimingChanged(AlertFragment t, String s, int total, int pills, int period, String next, String status) throws ParseException {
             // replace the uri, since the location has changed
             Uri uri = mUri;
             Cursor c;
             String mSelectionClause = EmberContract.MedicationOrderEntry.COLUMN_MEDICATION_ORDER_ID + " = ?";
             String[] mSelectionArgs = new String[]{s};
+            Uri u = EmberContract.BASE_CONTENT_URI.buildUpon().appendPath(PATH_MEDICATIONORDER).appendPath(s).build();
             if (null != uri) {
                 if (status == AlertAdapter.SNOOZE) {
-                    Uri u = EmberContract.BASE_CONTENT_URI;
-                    u.buildUpon().appendPath(PATH_MEDICATIONORDER).appendPath(s).build();
-                    Log.i(TAG, AlertAdapter.SNOOZE);
                     ContentValues values = new ContentValues();
-                    String timeNow = Utility.getTimeNow();
+                    String timeNow = next;
                     String next_dose = Utility.getSnoozeThisDose(timeNow, period);
-                    Log.i(TAG, next_dose);
                     values.put(EmberContract.MedicationOrderEntry.COLUMN_LAST_UPDATED_AT, timeNow);
-                    values.put(EmberContract.MedicationOrderEntry.COLUMN_LAST_TAKEN, timeNow);
                     values.put(EmberContract.MedicationOrderEntry.COLUMN_NEXT_DOSE, next_dose);
-                    final int update = mContext.getContentResolver().update(uri, values, mSelectionClause, mSelectionArgs);
+                    final int update = mContext.getContentResolver().update(u, values, mSelectionClause, mSelectionArgs);
                 } else if (status == AlertAdapter.SKIP) {
-                    Uri u = EmberContract.BASE_CONTENT_URI;
-                    u.buildUpon().appendPath(PATH_MEDICATIONORDER).appendPath(s).build();
                     ContentValues values = new ContentValues();
-                    String timeNow = Utility.getTimeNow();
-                    Log.i(TAG, AlertAdapter.SKIP);
+                    String timeNow = next;
                     String next_dose = Utility.getNextDoseDate(timeNow, period);
-                    Log.i(TAG, next_dose);
                     values.put(EmberContract.MedicationOrderEntry.COLUMN_LAST_UPDATED_AT, timeNow);
-                    values.put(EmberContract.MedicationOrderEntry.COLUMN_LAST_TAKEN, timeNow);
                     values.put(EmberContract.MedicationOrderEntry.COLUMN_NEXT_DOSE, next_dose);
-                    final int update = mContext.getContentResolver().update(uri, values, mSelectionClause, mSelectionArgs);
+                    final int update = mContext.getContentResolver().update(u, values, mSelectionClause, mSelectionArgs);
                 } else if (status == AlertAdapter.TAKE) {
-                    Uri u = EmberContract.BASE_CONTENT_URI;
-                    u.buildUpon().appendPath(PATH_MEDICATIONORDER).appendPath(s).build();
-                    Log.i(TAG, u.toString());
                     ContentValues values = new ContentValues();
                     String running_total = String.valueOf(total - pills);
                     String timeNow = Utility.getTimeNow();
                     String next_dose = Utility.getNextDoseDate(timeNow, period);
-                    Log.i(TAG, next_dose);
                     values.put(EmberContract.MedicationOrderEntry.COLUMN_RUNNING_TOTAL, running_total);
                     values.put(EmberContract.MedicationOrderEntry.COLUMN_LAST_UPDATED_AT, timeNow);
                     values.put(EmberContract.MedicationOrderEntry.COLUMN_LAST_TAKEN, timeNow);
                     values.put(EmberContract.MedicationOrderEntry.COLUMN_NEXT_DOSE, next_dose);
-                    final int update = mContext.getContentResolver().update(uri, values, mSelectionClause, mSelectionArgs);
+                    final int update = mContext.getContentResolver().update(u, values, mSelectionClause, mSelectionArgs);
                 }
             }
-            String id = EmberContract.MedicationOrderEntry.getPatientId(uri);
             Uri updatedUri = EmberContract.MedicationOrderEntry.buildMedicationOrderUri(s);
             mUri = updatedUri;
-
             t.getLoaderManager().restartLoader(ALERT_LOADER, null, t);
+        }
+
+        public void refreshFragment(){
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.detach(this).attach(this).commit();
         }
 
 
@@ -209,50 +203,54 @@ public class AlertActivity extends AppCompatActivity {
             pills = (TextView) parent.findViewById(R.id.alert_pills);
             next_dose = (TextView) parent.findViewById(R.id.time_text);
             String total, pill, s, next;
+            next = (String) next_dose.getText();
             total = (String) running_total.getText();
             pill = (String) pills.getText();
-            next = (String) next_dose.getText();
-
             s = (String) id.getText();
+
             Toast.makeText(mContext, s + " Snoozed",
                     Toast.LENGTH_SHORT).show();
-            onTimingChanged(mAlertFragment, s, Integer.parseInt(total), Integer.parseInt(pill), Integer.parseInt(next), AlertAdapter.SNOOZE);
+            onTimingChanged(mAlertFragment, s, Integer.parseInt(total), Integer.parseInt(pill), 15, next, AlertAdapter.SNOOZE);
         }
 
         static void takeMedication(View v) throws ParseException {
             View parent = (View) v.getParent();
-            TextView id, running_total, pills, last_taken, last_updated, next_dose;
+            TextView id, running_total, pills, last_taken, last_updated, frequency;
+
             id = (TextView) parent.findViewById(R.id.alert_medication_id);
             running_total = (TextView) parent.findViewById(R.id.alert_total);
             pills = (TextView) parent.findViewById(R.id.alert_pills);
-            next_dose = (TextView) parent.findViewById(R.id.time_text);
-            String total, pill, s, next;
+            frequency = (TextView) parent.findViewById(R.id.alert_frequency);
+            String total, pill, s, freq;
             total = (String) running_total.getText();
             pill = (String) pills.getText();
-            next = (String) next_dose.getText();
-
+            freq = (String) frequency.getText();
             s = (String) id.getText();
+
             Toast.makeText(mContext, s + " Taken",
                     Toast.LENGTH_SHORT).show();
-            onTimingChanged(mAlertFragment, s, Integer.parseInt(total), Integer.parseInt(pill), Integer.parseInt(next), AlertAdapter.TAKE);
+            onTimingChanged(mAlertFragment, s, Integer.parseInt(total), Integer.parseInt(pill), Integer.parseInt(freq), "", AlertAdapter.TAKE);
         }
 
         static void skipMedication(View v) throws ParseException {
             View parent = (View) v.getParent();
-            TextView id, running_total, pills, last_taken, last_updated, next_dose;
+            TextView id, running_total, pills, last_taken, last_updated, next_dose, frequency;
             id = (TextView) parent.findViewById(R.id.alert_medication_id);
             running_total = (TextView) parent.findViewById(R.id.alert_total);
             pills = (TextView) parent.findViewById(R.id.alert_pills);
             next_dose = (TextView) parent.findViewById(R.id.time_text);
-            String total, pill, s, next;
+            frequency = (TextView) parent.findViewById(R.id.alert_frequency);
+
+            String total, pill, s, next, freq;
+            next = (String) next_dose.getText();
             total = (String) running_total.getText();
             pill = (String) pills.getText();
-            next = (String) next_dose.getText();
-
             s = (String) id.getText();
+            freq = (String) frequency.getText();
+
             Toast.makeText(mContext, s + " Skipped",
                     Toast.LENGTH_SHORT).show();
-            onTimingChanged(mAlertFragment, s, Integer.parseInt(total), Integer.parseInt(pill), Integer.parseInt(next), AlertAdapter.SKIP);
+            onTimingChanged(mAlertFragment, s, Integer.parseInt(total), Integer.parseInt(pill), Integer.parseInt(freq), next, AlertAdapter.SKIP);
         }
 
         @Override
@@ -274,7 +272,7 @@ public class AlertActivity extends AppCompatActivity {
             //Uri uri = EmberContract.RelationEntry.buildFamilyUri(parentId);
             Loader<Cursor> lc = new CursorLoader(getActivity(),
                     mUri,
-                    DASHBOARD_COLUMNS,
+                    null,
                     null,
                     null,
                     null);

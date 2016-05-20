@@ -13,10 +13,11 @@ import static com.emyyn.riley.ember.data.EmberContract.PatientEntry;
  * Created by Riley on 4/30/2016.
  */
 public class EmberDbHelper extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 21;
+    private static final int DATABASE_VERSION = 24;
     static final String DATABASE_NAME = "ember.db";
 
     private static final String TEXT = " TEXT, ";
+    private static final String DATE = " DATETIME, ";
     private static final String REAL = " REAL, ";
     private static final String PRIMARY_KEY = " INTEGER PRIMARY KEY AUTOINCREMENT, ";
     private static final String DOUBLE = " DOUBLE, ";
@@ -104,12 +105,12 @@ public class EmberDbHelper extends SQLiteOpenHelper {
                 MedicationOrderEntry.COLUMN_DOSAGE_INSTRUCTIONS_TIMING_END + TEXT +
                 MedicationOrderEntry.COLUMN_DOSAGE_INSTRUCTIONS_DOSE_VALUE + INTEGER +
                 MedicationOrderEntry.COLUMN_DOSAGE_INSTRUCTIONS_DOSE_CODE + TEXT +
-                MedicationOrderEntry.COLUMN_LAST_UPDATED_AT + INTEGER +
+                MedicationOrderEntry.COLUMN_LAST_UPDATED_AT + DATE +
                 MedicationOrderEntry.COLUMN_REASON_GIVEN + TEXT +
                 MedicationOrderEntry.COLUMN_STATUS + TEXT +
-                MedicationOrderEntry.COLUMN_LAST_TAKEN + TEXT +
+                MedicationOrderEntry.COLUMN_LAST_TAKEN + DATE +
                 MedicationOrderEntry.COLUMN_RUNNING_TOTAL + TEXT +
-                MedicationOrderEntry.COLUMN_NEXT_DOSE + TEXT +
+                MedicationOrderEntry.COLUMN_NEXT_DOSE + DATE +
 
                 " FOREIGN KEY (" + MedicationOrderEntry.COLUMN_MED_KEY + ") REFERENCES " +
                 MedicationEntry.TABLE_NAME + " (" + MedicationEntry._ID + "), " +

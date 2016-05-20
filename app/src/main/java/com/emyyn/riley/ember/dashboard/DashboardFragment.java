@@ -1,5 +1,8 @@
 package com.emyyn.riley.ember.dashboard;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -17,6 +20,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.emyyn.riley.ember.Alerts.AlertActivity;
+import com.emyyn.riley.ember.MainActivity;
 import com.emyyn.riley.ember.R;
 import com.emyyn.riley.ember.Utility;
 import com.emyyn.riley.ember.data.EmberContract;
@@ -87,10 +91,11 @@ public class DashboardFragment extends Fragment implements LoaderManager.LoaderC
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Cursor cursor = (Cursor) parent.getItemAtPosition(position);
                 if (cursor != null) {
-
-                    Long medicationOrderId = cursor.getLong(COLUMN_MEDICATION_ORDER_ID);
-                    Intent intent = new Intent(getActivity(), MedicationDetails.class).setData(EmberContract.MedicationOrderEntry.buildMedicationOrderUri(medicationOrderId));
+                    String child = cursor.getString(COLUMN_CHILD_ID);
+                    Log.i("Child", child);
+                    Intent intent = new Intent(getActivity(), AlertActivity.class).setData(EmberContract.MedicationOrderEntry.buildMedicationOrderWithPatientId(child));
                     startActivity(intent);
+
                 }
             }
         });
@@ -99,14 +104,8 @@ public class DashboardFragment extends Fragment implements LoaderManager.LoaderC
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 Cursor cursor = (Cursor) parent.getItemAtPosition(position);
                 if (cursor != null) {
-//                    for (int i = 0; i < cursor.getColumnCount(); i ++)
-//                    {
-//                        Log.i(cursor.getColumnName(i), "at: " + i);
-//                    }
-
-                    String child = cursor.getString(COLUMN_CHILD_ID);
-                    Log.i("Child", child);
-                    Intent intent = new Intent(getActivity(), AlertActivity.class).setData(EmberContract.MedicationOrderEntry.buildMedicationOrderWithPatientId(child));
+                    Long medicationOrderId = cursor.getLong(COLUMN_MEDICATION_ORDER_ID);
+                    Intent intent = new Intent(getActivity(), MedicationDetails.class).setData(EmberContract.MedicationOrderEntry.buildMedicationOrderUri(medicationOrderId));
                     startActivity(intent);
                 }
                 return true;
@@ -118,6 +117,7 @@ public class DashboardFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         getLoaderManager().initLoader(DASHBOARD_LOADER, null, this);
+
         //Creates database
 //        try {
 //            FakeMedicationOrders orders = new FakeMedicationOrders(getActivity());
@@ -179,5 +179,21 @@ public class DashboardFragment extends Fragment implements LoaderManager.LoaderC
         args.putInt("Args", position);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public void setAlarm(View view) throws ParseException {
+        String parentId = getActivity().getString(R.string.pref_patient_default);
+        Uri uri = EmberContract.RelationEntry.buildFamilyMedicationUri(parentId);
+        Cursor cursor = getContext().getContentResolver().query(uri, null,null,null,null);
+        AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(getContext().ALARM_SERVICE);
+        Intent mainActivity = new Intent(getActivity(), MainActivity.class);
+        Long alertTime;
+        while (cursor.moveToNext()){
+            int i = cursor.getColumnIndexOrThrow("next_dose");
+            String next_dose = cursor.getString(i);
+            Log.i("DashboardFrag", next_dose.toString());
+            alertTime = Utility.dateToLong(Utility.formatDate(next_dose));
+            alarmManager.set(AlarmManager.RTC_WAKEUP, alertTime, PendingIntent.getBroadcast(getActivity(), 1, mainActivity, PendingIntent.FLAG_UPDATE_CURRENT));
+        }
     }
 }

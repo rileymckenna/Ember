@@ -56,6 +56,7 @@ public class EmberProvider extends ContentProvider {
     static final int MEDICATION_ORDERS = 503;
     static final int RELATIONS = 600;
     static final int RELATIONS_PATIENT = 601;
+    static final int RELATIONS_PATIENTS = 602;
     static final int FAMILY_BY_PARENT_ID = 700;
     static final int CHILDREN = 800;
 
@@ -72,10 +73,11 @@ public class EmberProvider extends ContentProvider {
         matcher.addURI(authority, PATH_MEDICATION, MEDICATION);
         matcher.addURI(authority, PATH_MEDICATIONORDER + "/patient/#", MEDICATION_ORDER_PATIENT);
         matcher.addURI(authority, PATH_MEDICATIONORDER, MEDICATION_ORDER);
-        matcher.addURI(authority, PATH_MEDICATIONORDER + "/#", MEDICATION_ORDERS);
+        matcher.addURI(authority, PATH_MEDICATIONORDER + "/*", MEDICATION_ORDERS);
         matcher.addURI(authority, PATH_RELATIONS, RELATIONS);
         matcher.addURI(authority, PATH_RELATIONS + "/patient/*", RELATIONS_PATIENT);
         matcher.addURI(authority, PATH_MEDICATIONORDER+ "/family/*", FAMILY_BY_PARENT_ID);
+        matcher.addURI(authority, PATH_RELATIONS + "/patients/*", RELATIONS_PATIENTS);
         matcher.addURI(authority, "/children/*", CHILDREN);
         //matcher.addURI(authority, PATH_MEDICATIONORDER, MEDICATION_ORDER);
 
@@ -189,7 +191,7 @@ public class EmberProvider extends ContentProvider {
                         "ON relation.child_id = medication_order.patient_id\n" +
                         "INNER JOIN medication \n" +
                         "ON medication_order.medication_id = medication._id\n" +
-                        "WHERE relation.patient_id = ?", new String[]{id});
+                        "WHERE relation.patient_id = ?" + " ORDER BY medication_order.next_dose DESC;", new String[]{id});
                 break;
             }
             case MEDICATION_ORDER: {
@@ -197,21 +199,41 @@ public class EmberProvider extends ContentProvider {
                 c = mOpenHelper.getReadableDatabase().rawQuery("SELECT " + Utility.queryColumns(Utility.getMedicationOrderColumns()) + " FROM Patient \n" +
                         "INNER JOIN medication_order ON medication_order.patient_id = patient.patient_id \n" +
                         "INNER JOIN medication ON  medication._id = medication_order.medication_id \n" +
-                        "WHERE medication_order.medication_order_id = ?", new String[]{id});
+                        "WHERE medication_order.medication_order_id = ?" +
+                        "ORDER BY medication_order.next_dose DESC;", new String[]{id});
                 break;
             }
-            case RELATIONS_PATIENT: {
+            case RELATIONS_PATIENTS: {
                 String id = EmberContract.RelationEntry.getParentId(uri);
-                c = mOpenHelper.getReadableDatabase().rawQuery("SELECT DISTINCT " + Utility.queryColumns(Utility.getDashboardColumns()) + " FROM patient\n" +
+                c = mOpenHelper.getReadableDatabase().rawQuery("SELECT " + Utility.queryColumns(Utility.getDashboardColumns()) + " FROM patient\n" +
                         "INNER JOIN relation\n" +
                         "ON relation.child_id = patient.patient_id\n" +
                         "INNER JOIN medication_order\n" +
                         "ON relation.child_id = medication_order.patient_id\n" +
                         "INNER JOIN medication \n" +
                         "ON medication_order.medication_id = medication._id\n" +
-                        "INNER JOIN provider ON  provider._id = medication_order.prescriber_id \n" +
-                        "WHERE relation.patient_id = ? " +
-                        "ORDER BY  medication_order.next_dose;" , new String[]{id});
+                        "INNER JOIN provider \n" +
+                        "ON  provider._id = medication_order.prescriber_id \n" +
+                        "WHERE relation.patient_id = ?\n" +
+                        "AND status = \"true\" \n" +
+                        "ORDER BY strftime('%Y-%m-%d %H:%M:%S',medication_order.next_dose) ASC, medication_order.patient_id" , new String[]{id});
+                break;
+            }
+            case RELATIONS_PATIENT: {
+                String id = EmberContract.RelationEntry.getParentId(uri);
+                c = mOpenHelper.getReadableDatabase().rawQuery("SELECT " + Utility.queryColumns(Utility.getDashboardColumns()) + " FROM patient\n" +
+                        "INNER JOIN relation\n" +
+                        "ON relation.child_id = patient.patient_id\n" +
+                        "INNER JOIN medication_order\n" +
+                        "ON relation.child_id = medication_order.patient_id\n" +
+                        "INNER JOIN medication \n" +
+                        "ON medication_order.medication_id = medication._id\n" +
+                        "INNER JOIN provider \n" +
+                        "ON  provider._id = medication_order.prescriber_id \n" +
+                        "WHERE relation.patient_id = ?\n" +
+                        "AND status = \"true\" \n" +
+                        "GROUP BY patient.first_name\n" +
+                        "ORDER BY strftime('%Y-%m-%d %H:%M:%S',medication_order.next_dose) ASC" , new String[]{id});
                 break;
             }
             case MEDICATION_ORDERS: {
@@ -225,6 +247,7 @@ public class EmberProvider extends ContentProvider {
                         "ON medication_order.medication_id = medication._id\n" +
                         "INNER JOIN provider ON  provider._id = medication_order.prescriber_id \n" +
                         "WHERE medication_order.medication_order_id = ?" +
+                        "AND status = \"true\" \n" +
                         "LIMIT 1", new String[]{id});
                 break;
             }
@@ -254,6 +277,7 @@ public class EmberProvider extends ContentProvider {
                         "INNER JOIN medication_order ON medication_order.patient_id = patient.patient_id \n" +
                         "INNER JOIN medication ON  medication._id = medication_order.medication_id \n" +
                         "WHERE patient.patient_id = ?" +
+                        "AND status = \"true\" \n" +
                         "ORDER BY patient.last_name", new String[]{id});
 
                 //c = getPatientWithMedicationOrder(uri, projection, sortOrder);
@@ -366,7 +390,7 @@ public class EmberProvider extends ContentProvider {
                 rowsUpdated = db.update(PatientEntry.TABLE_NAME, values, selection, selectionArgs);
                 break;
             }
-            case MEDICATION_ORDER: {
+            case MEDICATION_ORDERS: {
                 rowsUpdated = db.update(MedicationOrderEntry.TABLE_NAME, values, selection, selectionArgs);
                 break;
             }

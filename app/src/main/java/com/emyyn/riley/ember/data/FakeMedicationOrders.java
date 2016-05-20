@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
 
+import com.emyyn.riley.ember.Utility;
 import com.emyyn.riley.ember.data.EmberContract;
 import com.emyyn.riley.ember.data.EmberContract.PatientEntry;
 import com.emyyn.riley.ember.data.FakeData;
@@ -35,6 +36,7 @@ import static com.emyyn.riley.ember.data.EmberContract.MedicationOrderEntry.COLU
 import static com.emyyn.riley.ember.data.EmberContract.MedicationOrderEntry.COLUMN_LAST_UPDATED_AT;
 import static com.emyyn.riley.ember.data.EmberContract.MedicationOrderEntry.COLUMN_MEDICATION_ORDER_ID;
 import static com.emyyn.riley.ember.data.EmberContract.MedicationOrderEntry.COLUMN_MED_KEY;
+import static com.emyyn.riley.ember.data.EmberContract.MedicationOrderEntry.COLUMN_NEXT_DOSE;
 import static com.emyyn.riley.ember.data.EmberContract.MedicationOrderEntry.COLUMN_PATIENT_KEY;
 import static com.emyyn.riley.ember.data.EmberContract.MedicationOrderEntry.COLUMN_PRESCRIBER_KEY;
 import static com.emyyn.riley.ember.data.EmberContract.MedicationOrderEntry.COLUMN_REASON_GIVEN;
@@ -147,7 +149,8 @@ public class FakeMedicationOrders {
             medicationOrderValues.put(COLUMN_DOSAGE_INSTRUCTIONS_TIMING_START, valid_start);
             medicationOrderValues.put(COLUMN_DOSAGE_INSTRUCTIONS_TIMING_END, valid_end);
             medicationOrderValues.put(COLUMN_DOSAGE_INSTRUCTIONS_DOSE_VALUE, dose_value);
-            medicationOrderValues.put(COLUMN_LAST_UPDATED_AT, Calendar.getInstance().getTime().toString());
+            medicationOrderValues.put(COLUMN_LAST_UPDATED_AT, Utility.getTimeNow());
+            medicationOrderValues.put(COLUMN_NEXT_DOSE, Utility.getTimeNow());
             medicationOrderValues.put(COLUMN_DOSAGE_INSTRUCTIONS_DOSE_CODE, dose_code);
             medicationOrderValues.put(COLUMN_REASON_GIVEN, reason_given);
             medicationOrderValues.put(COLUMN_STATUS, status);

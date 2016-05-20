@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -17,6 +18,8 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.emyyn.riley.ember.Alerts.AlertActivity;
+import com.emyyn.riley.ember.MainActivity;
 import com.emyyn.riley.ember.R;
 import com.emyyn.riley.ember.Utility;
 import com.emyyn.riley.ember.data.EmberContract;
@@ -47,6 +50,10 @@ public class MedicationDetails extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.details_container, fragment)
                     .commit();
+
+            TaskStackBuilder taskStackBuilder = TaskStackBuilder.create(this);
+            taskStackBuilder.addParentStack(AlertActivity.class);
+            taskStackBuilder.addNextIntent(getIntent());
         }
     }
     @Override

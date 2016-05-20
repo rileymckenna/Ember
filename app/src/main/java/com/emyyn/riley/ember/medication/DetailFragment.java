@@ -53,7 +53,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     static final int COLUMN_PATIENT_KEY = 2;
     static final int COLUMN_DISPENSE_SUPPLY_VALUE = 3;
     static final int COLUMN_DISPENSE_SUPPLY_UNIT = 4;
-    static final int COLUMN_DISPENSE_QUANTITY = 5;
+
     static final int COLUMN_VALID_START = 5;
     static final int COLUMN_VALID_END = 6;
     static final int COLUMN_LAST_UPDATED_AT = 7;
@@ -69,6 +69,12 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     static final int COLUMN_DOSAGE_INSTRUCTIONS_FREQUENCY = 17;
     static final int COLUMN_PROVIDER_NAME = 18;
     static final int COLUMN_REASON = 19;
+    static final int COLUMN_DISPENSE_QUANTITY = 20;
+    static final int COLUMN_DOSAGE_INSTRUCTIONS_TIMING_PERIOD = 21;
+    static final int COLUMN_DOSAGE_INSTRUCTIONS_TIMING_PERIOD_UNITS = 22;
+    static final int COLUMN_NEXT_DOSE = 23;
+    static final int COLUMN_CHILD_ID = 28;
+    static final int COLUMN_PARENT_ID = 29;
 
 
     private String running_total;
@@ -88,6 +94,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private String next_dose;
     private String provider_name;
     private String reason;
+    private String max_quantity;
 
     TextView details_name;
     TextView details_status;
@@ -100,6 +107,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     TextView directions;
     TextView remaining_prescription;
     ProgressBar details_refill_progress;
+
 
     public DetailFragment() {
         setHasOptionsMenu(true);
@@ -206,33 +214,15 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             instructions_text = cursor.getString(COLUMN_DOSAGE_INSTRUCTIONS_TEXT);
             provider_name = cursor.getString(COLUMN_PROVIDER_NAME);
             ds_value = cursor.getString(COLUMN_DISPENSE_SUPPLY_VALUE);
+            next_dose = cursor.getString(COLUMN_NEXT_DOSE);
+            max_quantity = cursor.getString(COLUMN_DISPENSE_QUANTITY);
 
-            details_refill_progress.setMax(Integer.parseInt(ds_value));
-
-//            try {
-//                if (Integer.decode(instructions_text) > 0) {
-//                    freq = Integer.decode(instructions_text);
-//                }
-//                if (last == null) {
-//                    int s = (Integer.parseInt(Utility.getNextDose(start)));
-//                    if (s > 0) {
-//                        next_dose = String.valueOf(s);
-//                    } else if (s < 0)
-//                        next_dose = "Past Due " + Math.abs(s) + " hours";
-//                    else {
-//                        int i = Utility.getNextDoseMin(start);
-//                        next_dose = String.valueOf(i) + " minutes";
-//                    }
-//                } else {
-//                    int s = Math.abs(Integer.parseInt(Utility.getNextDose(last)));
-//                    next_dose = String.valueOf(s);
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
+            details_refill_progress.setMax(Integer.parseInt(max_quantity));
+            details_refill_progress.setProgress(Integer.parseInt(max_quantity) - Integer.parseInt(running_total));
 
             //details_dosage.setText("Take " + freq);
             details_name.setText(patientName);
+            next_doses.setText(next_dose);
             extra.setText( "(" + dose_value + " " + dose_code +")");
             details_status.setText(Utility.getStatus(status));
             next_doses.setText(next_dose);

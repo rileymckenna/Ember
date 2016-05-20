@@ -12,7 +12,10 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 
+import com.emyyn.riley.ember.Alerts.AlertActivity;
+import com.emyyn.riley.ember.MainActivity;
 import com.emyyn.riley.ember.R;
 
 /**
@@ -56,6 +59,7 @@ public class Notifications {
         final String title = exampleString;
         final String text =  exampleString;
 
+        Intent mainIntent = new Intent(context, MainActivity.class);
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
 
                 // Set appropriate defaults for the notification light, sound,
@@ -100,15 +104,16 @@ public class Notifications {
                         PendingIntent.getActivity(
                                 context,
                                 0,
-                                new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.google.com")),
+                                mainIntent,
                                 PendingIntent.FLAG_UPDATE_CURRENT))
+
 
                 // Show expanded text content on devices running Android 4.1 or
                 // later.
                 .setStyle(new NotificationCompat.BigTextStyle()
                         .bigText(text)
                         .setBigContentTitle(title)
-                        .setSummaryText("Need to take a medication"))
+                        .setSummaryText("You have pending medication Administrations"))
 
                 // Example additional actions for this notification. These will
                 // only show on devices running Android 4.1 or later, so you
@@ -123,16 +128,22 @@ public class Notifications {
                                 0,
                                 Intent.createChooser(new Intent(Intent.ACTION_SEND)
                                         .setType("text/plain")
-                                        .putExtra(Intent.EXTRA_TEXT, "Dummy text"), "Dummy title"),
+                                        .putExtra(Intent.EXTRA_TEXT, "Reminder to take your medication"), "Reminder to take your medication"),
                                 PendingIntent.FLAG_UPDATE_CURRENT))
                 .addAction(
-                        R.drawable.ic_action_stat_reply,
-                        res.getString(R.string.action_reply),
+                        R.drawable.ic_snooze,
+                        res.getString(R.string.action_snooze),
+                        null)
+                .addAction(
+                        R.drawable.ic_done,
+                        res.getString(R.string.action_take),
                         null)
 
                 // Automatically dismiss the notification when it is touched.
                 .setAutoCancel(true);
-
+        TaskStackBuilder taskStackBuilder = TaskStackBuilder.create(context);
+        taskStackBuilder.addParentStack(MainActivity.class);
+        taskStackBuilder.addNextIntent(mainIntent);
         notify(context, builder.build());
     }
 

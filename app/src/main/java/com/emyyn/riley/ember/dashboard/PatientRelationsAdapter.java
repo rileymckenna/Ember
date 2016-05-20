@@ -68,6 +68,7 @@ public class PatientRelationsAdapter extends CursorAdapter {
         ds_value = cursor.getString(DashboardFragment.COLUMN_DISPENSE_QUANTITY);
         timing_period = cursor.getString(DashboardFragment.COLUMN_DOSAGE_INSTRUCTIONS_TIMING_PERIOD);
         period_unit = cursor.getString(DashboardFragment.COLUMN_DOSAGE_INSTRUCTIONS_TIMING_PERIOD_UNITS);
+        next_dose = cursor.getString(DashboardFragment.COLUMN_NEXT_DOSE);
 
         instructions_text = instructions_text.substring(5, 6);
         // Log.i("instructions text: " , String.valueOf(Integer.decode(instructions_text)));
@@ -77,8 +78,8 @@ public class PatientRelationsAdapter extends CursorAdapter {
             if (Integer.decode(instructions_text) > 0) {
                 freq = Integer.decode(instructions_text);
             }
-            if (last == null) {
-                int s = (Integer.parseInt(Utility.getNextDose(start)));
+            if (last == null && next_dose == null) {
+                int s = (Integer.parseInt(Utility.getNextAdministration(start)));
                 if (s > 0) {
                     next_dose = String.valueOf(s);
                 } else if (s < 0)
@@ -87,9 +88,8 @@ public class PatientRelationsAdapter extends CursorAdapter {
                     int i = Utility.getNextDoseMin(start);
                     next_dose = String.valueOf(i) + " minutes";
                 }
-            } else {
-                int s = Math.abs(Integer.parseInt(Utility.getNextDoseDate(last, Integer.parseInt(timing_period))));
-                next_dose = String.valueOf(s);
+            } else if (next_dose == null ){
+                next_dose = String.valueOf(Utility.getNextAdministration(last));
             }
         } catch (Exception e) {
             e.printStackTrace();
