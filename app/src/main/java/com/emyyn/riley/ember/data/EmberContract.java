@@ -266,7 +266,7 @@ public class EmberContract {
         }
 
         public static String getParentId(Uri uri) {
-            Log.i("GetPatientId", uri.getPathSegments().get(2).toString());
+            //Log.i("GetPatientId", uri.getPathSegments().get(2).toString());
             return uri.getPathSegments().get(2);
         }
 

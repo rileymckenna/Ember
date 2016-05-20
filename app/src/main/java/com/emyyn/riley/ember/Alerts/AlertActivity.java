@@ -33,6 +33,7 @@ import android.widget.Toast;
 
 import com.emyyn.riley.ember.R;
 import com.emyyn.riley.ember.Utility;
+import com.emyyn.riley.ember.dashboard.DashboardFragment;
 import com.emyyn.riley.ember.data.EmberContract;
 import com.emyyn.riley.ember.medication.MedicationDetails;
 
@@ -160,16 +161,15 @@ public class AlertActivity extends AppCompatActivity {
             if (null != uri) {
                 if (status == AlertAdapter.SNOOZE) {
                     ContentValues values = new ContentValues();
-                    String timeNow = next;
-                    String next_dose = Utility.getSnoozeThisDose(timeNow, period);
-                    values.put(EmberContract.MedicationOrderEntry.COLUMN_LAST_UPDATED_AT, timeNow);
+                    //String next_dose = Utility.getSnoozeThisDose(timeNow, period);
+                    String next_dose = Utility.getSnoozeThisDose(Utility.getTimeNow(), 1);
+                    values.put(EmberContract.MedicationOrderEntry.COLUMN_LAST_UPDATED_AT, next);
                     values.put(EmberContract.MedicationOrderEntry.COLUMN_NEXT_DOSE, next_dose);
                     final int update = mContext.getContentResolver().update(u, values, mSelectionClause, mSelectionArgs);
                 } else if (status == AlertAdapter.SKIP) {
                     ContentValues values = new ContentValues();
-                    String timeNow = next;
-                    String next_dose = Utility.getNextDoseDate(timeNow, period);
-                    values.put(EmberContract.MedicationOrderEntry.COLUMN_LAST_UPDATED_AT, timeNow);
+                    String next_dose = Utility.getNextDoseDate(next, period);
+                    values.put(EmberContract.MedicationOrderEntry.COLUMN_LAST_UPDATED_AT, next);
                     values.put(EmberContract.MedicationOrderEntry.COLUMN_NEXT_DOSE, next_dose);
                     final int update = mContext.getContentResolver().update(u, values, mSelectionClause, mSelectionArgs);
                 } else if (status == AlertAdapter.TAKE) {

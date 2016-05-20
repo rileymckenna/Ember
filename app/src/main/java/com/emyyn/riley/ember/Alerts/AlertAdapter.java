@@ -11,8 +11,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.BounceInterpolator;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -103,6 +105,7 @@ public class AlertAdapter extends CursorAdapter implements Animation.AnimationLi
     private String pills;
     private String medication_order_id;
 
+    private boolean isMin = false;
     private boolean isNearTime = false;
 
     Animation animSlideUp, animSlideDown;
@@ -143,10 +146,14 @@ public class AlertAdapter extends CursorAdapter implements Animation.AnimationLi
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Log.i("NextAdministration", String.valueOf(Integer.parseInt(Utility.getNextAdministration(next_dose))));
         if (1 > Integer.parseInt(Utility.getNextAdministration(next_dose))){
-            Log.i("NextAdministration", String.valueOf(Integer.parseInt(Utility.getNextAdministration(next_dose))));
             isNearTime = true;
+            isMin = false;
+            if (Integer.parseInt(Utility.getNextAdministration(next_dose)) <= 1 && Integer.parseInt(Utility.getNextAdministration(next_dose)) > 0){
+                isMin = true;
+                int i = Utility.getNextDoseMin(start);
+                next_dose = String.valueOf(i);
+            }
         }
     }
 
@@ -239,11 +246,12 @@ public class AlertAdapter extends CursorAdapter implements Animation.AnimationLi
 
 
         //Log.i("Adpater", patientName);
-        TextView medication, status, instructions, id, timing, skip, snooze, take, total, pill, period;
+        TextView medication, status, instructions, id, timing, skip, snooze, take, total, pill, period, alert_period_units;
         total = (TextView) view.findViewById(R.id.alert_total);
         medication = (TextView) view.findViewById(R.id.alert_name);
         status = (TextView) view.findViewById(R.id.alert_status);
         instructions = (TextView) view.findViewById(R.id.alert_text);
+        alert_period_units = (TextView) view.findViewById(R.id.alert_period_units);
         timing = (TextView) view.findViewById(R.id.time_text);
         pill = (TextView) view.findViewById(R.id.alert_pills);
         id = (TextView) view.findViewById(R.id.alert_medication_id);
@@ -266,18 +274,29 @@ public class AlertAdapter extends CursorAdapter implements Animation.AnimationLi
             }
         });
 
+        //Set Units
+        if (isMin){
+            alert_period_units.setText(" min");
+        }else {
+            alert_period_units.setText(di_period_units);
+        }
+
         //Onlclick Listeners for the skip snooze and take
         skip = (TextView) view.findViewById(R.id.alert_skip);
         snooze = (TextView) view.findViewById(R.id.alert_snooze);
         take = (TextView) view.findViewById(R.id.alert_take);
+        ImageView check= (ImageView) view.findViewById(R.id.imageView2);
         if (isNearTime){
             skip.setVisibility(View.VISIBLE);
             snooze.setVisibility(View.VISIBLE);
             take.setVisibility(View.VISIBLE);
+            check.setVisibility(View.VISIBLE);
+
         }else {
             skip.setVisibility(View.INVISIBLE);
             snooze.setVisibility(View.INVISIBLE);
             take.setVisibility(View.INVISIBLE);
+            check.setVisibility(View.INVISIBLE);
         }
 
         skip.setOnClickListener(new View.OnClickListener() {
@@ -319,6 +338,7 @@ public class AlertAdapter extends CursorAdapter implements Animation.AnimationLi
 
 
         ProgressBar details_refill_progress = (ProgressBar) view.findViewById(R.id.alerts_progress);
+        details_refill_progress.setScaleY(3f);
         details_refill_progress.setMax(Integer.parseInt(max_quantity));
         if (patient_name != null) {
             patient_name.setText(patientName+"");

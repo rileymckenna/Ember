@@ -30,12 +30,6 @@ import static com.emyyn.riley.ember.data.EmberContract.PatientEntry;
 public class EmberProvider extends ContentProvider {
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();
-
-
-    public EmberDbHelper getmOpenHelper() {
-        return mOpenHelper;
-    }
-
     private EmberDbHelper mOpenHelper;
     private final String TAG = this.getClass().getSimpleName();
 
@@ -183,7 +177,7 @@ public class EmberProvider extends ContentProvider {
             }
             case FAMILY_BY_PARENT_ID: {
                 String id = EmberContract.MedicationOrderEntry.getMedicationOrderId(uri);
-                Log.i("EmberProvider", "family id");
+                //Log.i("EmberProvider", "family id");
                 c = mOpenHelper.getReadableDatabase().rawQuery("SELECT " + Utility.queryColumns(Utility.getMedicationOrderColumns()) + " FROM patient\n" +
                         "INNER JOIN relation\n" +
                         "ON relation.patient_id = patient.patient_id\n" +
@@ -290,18 +284,6 @@ public class EmberProvider extends ContentProvider {
 
         return c;
     }
-
-    private Cursor getPatientWithMedicationOrder(Uri uri, String[] projection, String sortOrder) {
-        String id = EmberContract.MedicationOrderEntry.getPatientId(uri);
-        return sMedicationOrdersbyPatientSettingBuilder.query(mOpenHelper.getReadableDatabase(),
-                projection,
-                sWherePatientIdIs,
-                new String[]{id},
-                null,
-                null,
-                sOrderByLastName);
-    }
-
 
     @Nullable
     @Override

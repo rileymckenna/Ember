@@ -119,6 +119,7 @@ public class PatientRelationsAdapter extends CursorAdapter {
         TextView details_text = (TextView) view.findViewById(R.id.dashboard_text);
         ProgressBar details_refill_progress = (ProgressBar) view.findViewById(R.id.dashboard_progress);
         details_refill_progress.setMax(Integer.parseInt(ds_value));
+        details_refill_progress.setScaleY(3f);
         TextView dashboard_next_dose = (TextView) view.findViewById(R.id.dashboard_next_dose);
 
         //details_dosage.setText("Take " + freq);

@@ -5,7 +5,6 @@
     android:id="@+id/card_view"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="5dp"
     tools:cardPreventCornerOverlap="false"
     tools:cardUseCompatPadding="true"
     tools:context=".Alerts.AlertAdapter"
@@ -34,16 +33,13 @@
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/alert_text"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="@dimen/activity_horizontal_margin"
-                android:layout_marginTop="21dp"
                 android:indeterminate="false"
                 android:max="24"
                 android:progress="1"
                 android:progressBackgroundTint="@color/LIGRY"
                 android:progressTint="@color/colorPrimaryDark"
-                android:layout_alignEnd="@+id/alert_period_units"
+                android:layout_below="@+id/alert_total"
                 android:layout_alignStart="@+id/alert_text" />
 
 
@@ -51,10 +47,10 @@
                 android:id="@+id/alert_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="14dp"
                 android:text="Instructions"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:layout_below="@+id/next_administration"
+                android:layout_marginStart="20dp"
+                android:layout_below="@+id/alert_name"
                 android:layout_alignParentStart="true" />
 
             <TextView
@@ -94,7 +90,7 @@
                 android:id="@+id/next_administration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Next:"
+                android:text="Next dose:"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:layout_alignParentTop="true"
                 android:layout_toStartOf="@+id/alert_item_time" />
@@ -141,23 +137,21 @@
             android:textColor="@color/colorPrimary"
             android:textIsSelectable="false"
             android:textStyle="bold"
-            android:layout_alignBaseline="@+id/alert_snooze"
-            android:layout_alignBottom="@+id/alert_snooze"
-            android:layout_alignStart="@+id/expand_activities_button" />
+            android:layout_alignTop="@+id/alert_frequency"
+            android:layout_alignStart="@+id/child_name" />
 
         <TextView
             android:id="@+id/alert_snooze"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="44dp"
             android:clickable="true"
             android:onClick="snoozeMedication"
             android:text="snooze"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@color/colorPrimary"
             android:textStyle="bold"
-            android:layout_below="@+id/expand_activities_button"
-            android:layout_toEndOf="@+id/alert_skip" />
+            android:layout_alignTop="@+id/alert_skip"
+            android:layout_toEndOf="@+id/alert_pills" />
 
         <ImageView
             android:id="@+id/imageView2"
@@ -210,8 +204,10 @@
             android:fontFamily="sans-serif"
             android:text="Johnny"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textStyle="bold"
-            android:typeface="sans" />
+            android:typeface="sans"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

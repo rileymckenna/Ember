@@ -1,4 +1,4 @@
-package com.emyyn.riley.ember.Alerts;
+package com.emyyn.riley.ember;
 
 import android.content.res.Configuration;
 import android.os.Bundle;

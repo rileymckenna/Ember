@@ -17,5 +17,22 @@
     <Preference android:title="@string/pref_title_system_sync_settings">
         <intent android:action="android.settings.SYNC_SETTINGS" />
     </Preference>
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="@string/sync_mode_key"
+        android:title="@string/pref_title_sync_mode">
+    </SwitchPreference>
+    <EditTextPreference
+        android:capitalize="words"
+        android:defaultValue="@string/fhir_server_default"
+        android:inputType="textCapWords"
+        android:key="@string/fhir_key"
+        android:dependency="sync_mode_key"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/fhir_title_display" />
+
+
 
 </PreferenceScreen>

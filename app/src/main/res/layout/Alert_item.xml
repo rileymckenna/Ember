@@ -5,7 +5,6 @@
     android:id="@+id/card_view"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="5dp"
     tools:cardPreventCornerOverlap="false"
     tools:cardUseCompatPadding="true"
     tools:context=".Alerts.AlertAdapter"
@@ -31,7 +30,6 @@
             android:fontFamily="sans-serif"
             android:text="medication"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textStyle="bold"
             android:typeface="sans" />
 
         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -50,17 +48,14 @@
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/alert_text"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="@dimen/activity_horizontal_margin"
-                android:layout_marginTop="21dp"
                 android:indeterminate="false"
                 android:max="24"
                 android:progress="1"
                 android:progressBackgroundTint="#d9d9d9"
                 android:progressTint="#cb2121"
-                android:layout_alignStart="@+id/alert_text"
-                android:layout_alignParentEnd="true" />
+                android:layout_below="@+id/alert_total"
+                android:layout_centerHorizontal="true" />
 
 
             <TextView
@@ -215,7 +210,7 @@
             android:id="@+id/next_administration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Next:"
+            android:text="Next dose:"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:layout_alignParentTop="true"
             android:layout_toStartOf="@+id/alert_frequency" />
