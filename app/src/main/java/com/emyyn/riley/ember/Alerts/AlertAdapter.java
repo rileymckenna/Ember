@@ -22,6 +22,8 @@ import com.emyyn.riley.ember.Utility;
 import com.emyyn.riley.ember.data.EmberContract;
 import com.emyyn.riley.ember.medication.MedicationDetails;
 
+import org.slf4j.helpers.Util;
+
 import java.text.ParseException;
 
 import static com.emyyn.riley.ember.Alerts.AlertActivity.AlertFragment.*;
@@ -246,6 +248,8 @@ public class AlertAdapter extends CursorAdapter implements Animation.AnimationLi
         pill = (TextView) view.findViewById(R.id.alert_pills);
         id = (TextView) view.findViewById(R.id.alert_medication_id);
         period = (TextView) view.findViewById(R.id.alert_frequency);
+        TextView alert_item_time = (TextView) view.findViewById(R.id.alert_item_time);
+        alert_item_time.setText(Utility.getNextAdministration(next_dose));
         period.setText(freq);
         id.setText(medication_order_id);
         total.setText(running_total);

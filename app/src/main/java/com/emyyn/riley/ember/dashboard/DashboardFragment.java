@@ -80,10 +80,16 @@ public class DashboardFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         View rootView;
+
         adpater = new PatientRelationsAdapter(getActivity(), null, 0);
         rootView = inflater.inflate(R.layout.content_main, parent, false);
         ListView lv = (ListView) rootView.findViewById(R.id.listView);
         lv.setAdapter(adpater);
+        try {
+            setAlarm(rootView);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         // Log.i(TAG, "adapter Set");
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -119,13 +125,13 @@ public class DashboardFragment extends Fragment implements LoaderManager.LoaderC
         getLoaderManager().initLoader(DASHBOARD_LOADER, null, this);
 
         //Creates database
-//        try {
-//            FakeMedicationOrders orders = new FakeMedicationOrders(getActivity());
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            FakeMedicationOrders orders = new FakeMedicationOrders(getActivity());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         super.onActivityCreated(savedInstanceState);
     }
 

@@ -150,7 +150,7 @@ public class FakeMedicationOrders {
             medicationOrderValues.put(COLUMN_DOSAGE_INSTRUCTIONS_TIMING_END, valid_end);
             medicationOrderValues.put(COLUMN_DOSAGE_INSTRUCTIONS_DOSE_VALUE, dose_value);
             medicationOrderValues.put(COLUMN_LAST_UPDATED_AT, Utility.getTimeNow());
-            medicationOrderValues.put(COLUMN_NEXT_DOSE, Utility.getTimeNow());
+            medicationOrderValues.put(COLUMN_NEXT_DOSE, Utility.getNextDoseDate(Utility.getTimeNow(), Integer.parseInt(timing_period)));
             medicationOrderValues.put(COLUMN_DOSAGE_INSTRUCTIONS_DOSE_CODE, dose_code);
             medicationOrderValues.put(COLUMN_REASON_GIVEN, reason_given);
             medicationOrderValues.put(COLUMN_STATUS, status);

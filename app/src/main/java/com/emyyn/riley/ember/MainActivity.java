@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
             // Return a PlaceholderFragment (defined as a static inner class below).
             switch (position) {
                 case 0:
-                    return  DashboardFragment.newInstance(position);//MedicationFragment.newInstance(position);
+                    return DashboardFragment.newInstance(position);//MedicationFragment.newInstance(position);
                 default:
                     break;
             }

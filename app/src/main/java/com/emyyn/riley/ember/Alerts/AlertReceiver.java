@@ -13,6 +13,6 @@ import layout.Notifications;
 public class AlertReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        Notifications.notify(context, "Medication Reminder", 0);;
+        Notifications.notify(context, "Medication Reminder", 0);
     }
 }
