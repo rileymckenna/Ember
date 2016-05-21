@@ -197,7 +197,6 @@
             android:layout_height="wrap_content"
             android:text=" hrs"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:layout_alignBaseline="@+id/alert_name"
             android:layout_alignBottom="@+id/alert_name"
             android:layout_alignEnd="@+id/expand_activities_button" />
 
@@ -217,8 +216,7 @@
             android:layout_height="wrap_content"
             android:text="Next dose:"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:layout_alignBaseline="@+id/alert_item_time"
-            android:layout_alignBottom="@+id/alert_item_time"
+            android:layout_alignTop="@+id/alert_item_time"
             android:layout_toStartOf="@+id/alert_item_time" />
 
         <TextView
