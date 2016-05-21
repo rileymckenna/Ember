@@ -30,7 +30,8 @@
             android:fontFamily="sans-serif"
             android:text="medication"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:typeface="sans" />
+            android:typeface="sans"
+            android:paddingTop="@dimen/activity_vertical_margin"/>
 
         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/expand_activities_button"
@@ -55,7 +56,7 @@
                 android:progressBackgroundTint="#d9d9d9"
                 android:progressTint="#cb2121"
                 android:layout_below="@+id/alert_total"
-                android:layout_centerHorizontal="true" />
+                android:layout_alignStart="@+id/alert_total" />
 
 
             <TextView
@@ -84,9 +85,9 @@
                 android:text="remaining"
                 android:id="@+id/alert_total"
                 android:visibility="visible"
+                android:layout_marginTop="11dp"
                 android:layout_below="@+id/alert_text"
-                android:layout_alignStart="@+id/alerts_progress"
-                android:layout_marginTop="10dp" />
+                android:layout_alignStart="@+id/alert_text" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -122,10 +123,11 @@
             android:textColor="@color/colorPrimary"
             android:textIsSelectable="false"
             android:textStyle="bold"
-            android:layout_alignBaseline="@+id/alert_snooze"
-            android:layout_alignBottom="@+id/alert_snooze"
+            android:visibility="visible"
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:layout_below="@+id/expand_activities_button"
             android:layout_alignStart="@+id/expand_activities_button"
-            android:visibility="visible" />
+            android:layout_marginStart="14dp"/>
 
         <TextView
             android:id="@+id/alert_snooze"
@@ -174,8 +176,9 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="alert_medication_id"
             android:id="@+id/alert_medication_id"
-            android:layout_toEndOf="@+id/alert_name"
-            android:visibility="invisible" />
+            android:visibility="invisible"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -185,7 +188,8 @@
             android:id="@+id/alert_pills"
             android:layout_alignParentTop="true"
             android:layout_toEndOf="@+id/alert_skip"
-            android:visibility="invisible" />
+            android:visibility="invisible"
+            android:paddingTop="@dimen/activity_vertical_margin"/>
 
         <TextView
             android:id="@+id/alert_period_units"
@@ -193,8 +197,9 @@
             android:layout_height="wrap_content"
             android:text=" hrs"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:layout_alignParentTop="true"
-            android:layout_toEndOf="@+id/alert_item_time" />
+            android:layout_alignBaseline="@+id/alert_name"
+            android:layout_alignBottom="@+id/alert_name"
+            android:layout_alignEnd="@+id/expand_activities_button" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -212,8 +217,9 @@
             android:layout_height="wrap_content"
             android:text="Next dose:"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:layout_alignParentTop="true"
-            android:layout_toStartOf="@+id/alert_frequency" />
+            android:layout_alignBaseline="@+id/alert_item_time"
+            android:layout_alignBottom="@+id/alert_item_time"
+            android:layout_toStartOf="@+id/alert_item_time" />
 
         <TextView
             android:id="@+id/alert_item_time"
@@ -221,7 +227,7 @@
             android:layout_height="wrap_content"
             android:text="Time"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:layout_alignParentTop="true"
-            android:layout_toEndOf="@+id/next_administration" />
+            android:layout_alignTop="@+id/alert_period_units"
+            android:layout_toStartOf="@+id/alert_period_units" />
     </RelativeLayout>
 </android.support.v7.widget.CardView>

@@ -100,6 +100,7 @@ public class DashboardFragment extends Fragment implements LoaderManager.LoaderC
         lv.setAdapter(adpater);
         SharedPreferences sharedPreferences = getActivity().getPreferences(R.string.alerts_key);
         boolean notifications = sharedPreferences.getBoolean(String.valueOf(R.string.alerts_key), Boolean.TRUE);
+
         if (notifications) {
             try {
                 setAlarm();
@@ -143,10 +144,11 @@ public class DashboardFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         getLoaderManager().initLoader(DASHBOARD_LOADER, null, this);
-
+        boolean offline = true;
         //Creates database
         SharedPreferences sharedPreferences = getActivity().getPreferences(R.string.sync_mode_key);
-        boolean offline = sharedPreferences.getBoolean(String.valueOf(R.string.sync_mode_key), Boolean.FALSE);
+        offline = sharedPreferences.getBoolean(String.valueOf(R.string.sync_mode_key), Boolean.TRUE);
+        Log.i("offline", String.valueOf(offline));
         if (offline) {
             try {
                 FakeMedicationOrders orders = new FakeMedicationOrders(getActivity());

@@ -21,7 +21,7 @@
     <string name="action_snooze">snooze</string>
     <string name="action_reply">Take</string>
 
-    <string name="title_activity_alert">Alert Manager</string>
+    <string name="title_activity_alert">Alerts</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="title_activity_settings">Settings</string>
 
@@ -81,11 +81,11 @@
     <string name="pref_ringtone_silent">Silent</string>
 
     <string name="pref_title_vibrate">Vibrate</string>
-    <string name="title_activity_login">fhirStarters</string>
+    <string name="title_activity_login">Dashboard</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">username</string>
-    <string name="prompt_password">password (optional)</string>
+    <string name="prompt_password">password</string>
     <string name="action_sign_in">login</string>
     <string name="action_sign_in_short">Sign in</string>
     <string name="error_invalid_email">This email address is invalid</string>

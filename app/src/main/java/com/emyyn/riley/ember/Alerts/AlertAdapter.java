@@ -123,7 +123,7 @@ public class AlertAdapter extends CursorAdapter implements Animation.AnimationLi
         di_period_units = cursor.getString(COLUMN_PERIOD_UNITS);
         running_total = cursor.getString(COLUMN_RUNNING_TOTAL);
         ds_value = cursor.getString(COLUMN_DISPENSE_SUPPLY_VALUE);
-       // timing_period = cursor.getString(COLUMN_LAST_TAKEN);
+        // timing_period = cursor.getString(COLUMN_LAST_TAKEN);
         pills = instructions_text.substring(5, 6);
         medication_order_id = cursor.getString(COLUMN_MEDICATION_ORDER_ID);
         max_quantity = cursor.getString(COLUMN_DISPENSE_QUANTITY);
@@ -140,16 +140,16 @@ public class AlertAdapter extends CursorAdapter implements Animation.AnimationLi
                     int i = Utility.getNextDoseMin(start);
                     next_dose = String.valueOf(i) + " minutes";
                 }
-            } else if (next_dose == null ){
+            } else if (next_dose == null) {
                 next_dose = String.valueOf(Utility.getNextAdministration(last));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (1 > Integer.parseInt(Utility.getNextAdministration(next_dose))){
+        if (1 > Integer.parseInt(Utility.getNextAdministration(next_dose))) {
             isNearTime = true;
             isMin = false;
-            if (Integer.parseInt(Utility.getNextAdministration(next_dose)) <= 1 && Integer.parseInt(Utility.getNextAdministration(next_dose)) > 0){
+            if (Integer.parseInt(Utility.getNextAdministration(next_dose)) <= 1 && Integer.parseInt(Utility.getNextAdministration(next_dose)) > 0) {
                 isMin = true;
                 int i = Utility.getNextDoseMin(start);
                 next_dose = String.valueOf(i);
@@ -161,7 +161,7 @@ public class AlertAdapter extends CursorAdapter implements Animation.AnimationLi
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         int viewType = getItemViewType(cursor.getPosition());
         int layoutId = -1;
-        switch (viewType){
+        switch (viewType) {
             case VIEW_TYPE_FIRST: {
                 layoutId = R.layout.alert_first_item;
                 break;
@@ -244,7 +244,6 @@ public class AlertAdapter extends CursorAdapter implements Animation.AnimationLi
         }
 
 
-
         //Log.i("Adpater", patientName);
         TextView medication, status, instructions, id, timing, skip, snooze, take, total, pill, period, alert_period_units;
         total = (TextView) view.findViewById(R.id.alert_total);
@@ -268,16 +267,16 @@ public class AlertAdapter extends CursorAdapter implements Animation.AnimationLi
         cardView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                    Intent intent = new Intent(mContext, MedicationDetails.class).setData(EmberContract.MedicationOrderEntry.buildMedicationOrderUri(medication_order_id));
-                    mContext.startActivity(intent);
+                Intent intent = new Intent(mContext, MedicationDetails.class).setData(EmberContract.MedicationOrderEntry.buildMedicationOrderUri(medication_order_id));
+                mContext.startActivity(intent);
                 return true;
             }
         });
 
         //Set Units
-        if (isMin){
+        if (isMin) {
             alert_period_units.setText(" min");
-        }else {
+        } else {
             alert_period_units.setText(di_period_units);
         }
 
@@ -285,18 +284,18 @@ public class AlertAdapter extends CursorAdapter implements Animation.AnimationLi
         skip = (TextView) view.findViewById(R.id.alert_skip);
         snooze = (TextView) view.findViewById(R.id.alert_snooze);
         take = (TextView) view.findViewById(R.id.alert_take);
-        ImageView check= (ImageView) view.findViewById(R.id.imageView2);
-        if (isNearTime){
+        ImageView check = (ImageView) view.findViewById(R.id.imageView2);
+        if (isNearTime) {
             skip.setVisibility(View.VISIBLE);
             snooze.setVisibility(View.VISIBLE);
             take.setVisibility(View.VISIBLE);
             check.setVisibility(View.VISIBLE);
 
-        }else {
+        } else {
             skip.setVisibility(View.INVISIBLE);
             snooze.setVisibility(View.INVISIBLE);
             take.setVisibility(View.INVISIBLE);
-            check.setVisibility(View.INVISIBLE);
+           check.setVisibility(View.INVISIBLE);
         }
 
         skip.setOnClickListener(new View.OnClickListener() {
@@ -335,13 +334,11 @@ public class AlertAdapter extends CursorAdapter implements Animation.AnimationLi
         });
 
 
-
-
         ProgressBar details_refill_progress = (ProgressBar) view.findViewById(R.id.alerts_progress);
-        details_refill_progress.setScaleY(3f);
+        details_refill_progress.setScaleY(1f);
         details_refill_progress.setMax(Integer.parseInt(max_quantity));
         if (patient_name != null) {
-            patient_name.setText(patientName+"");
+            patient_name.setText(patientName + "");
         }
 
 

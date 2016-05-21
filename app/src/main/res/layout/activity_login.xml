@@ -25,6 +25,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/login_title"
+        android:layout_gravity="left"
         android:id="@+id/login_title"
         android:layout_marginTop="@dimen/login_margin"
         android:layout_marginBottom="@dimen/login_margin"/>

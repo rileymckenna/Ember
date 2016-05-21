@@ -47,6 +47,7 @@ public class PatientRelationsAdapter extends CursorAdapter {
     private String status;
     private int freq = 1;
     private String next_dose;
+    private String max_quantity;
 
     public static ArrayList<String> getChildrenList() {
         return childrenList;
@@ -65,10 +66,11 @@ public class PatientRelationsAdapter extends CursorAdapter {
         last = cursor.getString(DashboardFragment.COLUMN_LAST_TAKEN);
         status = cursor.getString(DashboardFragment.COLUMN_STATUS);
         running_total = cursor.getString(DashboardFragment.COLUMN_RUNNING_TOTAL);
-        ds_value = cursor.getString(DashboardFragment.COLUMN_DISPENSE_QUANTITY);
+        ds_value = cursor.getString(DashboardFragment.COLUMN_DISPENSE_SUPPLY_VALUE);
         timing_period = cursor.getString(DashboardFragment.COLUMN_DOSAGE_INSTRUCTIONS_TIMING_PERIOD);
         period_unit = cursor.getString(DashboardFragment.COLUMN_DOSAGE_INSTRUCTIONS_TIMING_PERIOD_UNITS);
         next_dose = cursor.getString(DashboardFragment.COLUMN_NEXT_DOSE);
+        max_quantity = cursor.getString(DashboardFragment.COLUMN_DISPENSE_QUANTITY);
 
         instructions_text = instructions_text.substring(5, 6);
         // Log.i("instructions text: " , String.valueOf(Integer.decode(instructions_text)));
@@ -118,8 +120,8 @@ public class PatientRelationsAdapter extends CursorAdapter {
         TextView remaining = (TextView) view.findViewById(R.id.remaining);
         TextView details_text = (TextView) view.findViewById(R.id.dashboard_text);
         ProgressBar details_refill_progress = (ProgressBar) view.findViewById(R.id.dashboard_progress);
-        details_refill_progress.setMax(Integer.parseInt(ds_value));
-        details_refill_progress.setScaleY(3f);
+        details_refill_progress.setMax(Integer.parseInt(max_quantity));
+        details_refill_progress.setScaleY(1f);
         TextView dashboard_next_dose = (TextView) view.findViewById(R.id.dashboard_next_dose);
 
         //details_dosage.setText("Take " + freq);
@@ -129,7 +131,7 @@ public class PatientRelationsAdapter extends CursorAdapter {
         details_status.setText(Utility.getStatus((status)));
         details_text.setText("Take " + instructions_text + getDoseText() + prescription);
         dashboard_name.setText(patientName);
-        details_refill_progress.setProgress(Integer.parseInt(running_total));
+        details_refill_progress.setProgress(Integer.parseInt(max_quantity) - Integer.parseInt(running_total));
     }
 
     private String getDoseText() {
